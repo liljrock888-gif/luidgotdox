@@ -277,7 +277,7 @@
     if (S.tool === 'picker') return pickColor(p);
     if (S.tool === 'fill') return floodFill(p);
     if (S.tool === 'text') return placeText(p);
-    overlay.setPointerCapture(e.pointerId);
+    try { overlay.setPointerCapture(e.pointerId); } catch (err) { /* synthetic or stale pointer: drawing still works */ }
     drawing = true; start = last = p;
     if (S.tool === 'brush' || S.tool === 'eraser') {
       sctx.clearRect(0, 0, S.W, S.H);
