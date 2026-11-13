@@ -1,6 +1,7 @@
-/* LuidgotDOx: help chat.
-   Free on purpose: uses the browser's built-in AI when the visitor's browser has it (Chrome desktop, runs on their device),
-   otherwise answers from the built-in guide below. No API key, no server, nothing is sent anywhere. */
+/* LuidgotDOx: AI help chat. Free on purpose, no API key:
+   1) the browser's built-in AI if the visitor has it (Chrome desktop, runs on their device),
+   2) otherwise the free Pollinations AI service (questions are sent there; the panel tells people not to type personal info),
+   3) otherwise (offline / service busy) the built-in guide below. */
 (function () {
   'use strict';
   const { $ } = window.FS;
@@ -83,6 +84,49 @@ Keep answers short and simple (a few sentences or a short list). Students use th
     return out;
   }
 
+  // ---------- free online AI (Pollinations: no key, no account, CORS-enabled) ----------
+  const CLOUD = 'https://text.pollinations.ai/openai';
+  const history = [];   // recent turns so follow-up questions make sense
+  const tidy = (s) => String(s || '')
+    .replace(/\*\*(.+?)\*\*/g, '$1').replace(/__(.+?)__/g, '$1')      // markdown bold
+    .replace(/^#{1,6}\s*/gm, '').replace(/^\s*[*-]\s+/gm, '- ')      // headings, bullets
+    .replace(/`([^`]+)`/g, '$1').trim();
+  async function answerCloud(q, onWait) {
+    const body = JSON.stringify({
+      model: 'openai', referrer: 'luidgotdox',
+      messages: [{ role: 'system', content: SYSTEM }, ...history.slice(-8), { role: 'user', content: q }]
+    });
+    // the free tier sometimes refuses a request that comes right after another one: wait and retry
+    for (let attempt = 0; attempt < 4; attempt++) {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 25000);
+      try {
+        const res = await fetch(CLOUD, { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctrl.signal, body });
+        if (res.status === 402 || res.status === 429 || res.status >= 500) {
+          const ra = parseFloat(res.headers.get('Retry-After'));
+          const wait = Math.min(15000, (ra > 0 ? ra * 1000 : 0) || [4000, 6000, 8000, 8000][attempt]);   // ~15s covers the free tier's cooldown
+          if (onWait) onWait(attempt);
+          await new Promise((r) => setTimeout(r, wait));
+          continue;
+        }
+        if (!res.ok) throw new Error('http ' + res.status);
+        const data = await res.json();
+        const text = tidy(data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content);
+        if (!text) throw new Error('empty');
+        return text;
+      } finally { clearTimeout(timer); }
+    }
+    throw new Error('busy');
+  }
+  async function typeOut(m, text) {
+    m.classList.remove('typing');
+    const step = Math.max(2, Math.round(text.length / 120));
+    for (let i = step; i < text.length + step; i += step) {
+      m.textContent = text.slice(0, i); log.scrollTop = log.scrollHeight;
+      await new Promise((r) => setTimeout(r, 12));
+    }
+  }
+
   // ---------- UI ----------
   const fab = document.createElement('button');
   fab.className = 'help-fab'; fab.textContent = 'Need help?'; fab.setAttribute('aria-label', 'Open help chat');
@@ -110,8 +154,10 @@ Keep answers short and simple (a few sentences or a short list). Students use th
     panel.hidden = false; fab.hidden = true; $('#helpIn').focus();
     if (!greeted) {
       greeted = true;
-      add('Hi! I\'m the LuidgotDOx helper. Ask me how to do anything here, or get help with your writing.', 'bot');
-      if (await aiAvailable()) $('#helpMode').textContent = 'AI is running on your device. Free and private.';
+      add('Hi! I\'m the LuidgotDOx AI helper. Ask me how to do anything here, brainstorm ideas, or get feedback on your writing.', 'bot');
+      $('#helpMode').textContent = (await aiAvailable())
+        ? 'AI running on your device. Free and private.'
+        : 'Free AI helper. Don\'t type personal info.';
     }
   }
   function close() { panel.hidden = true; fab.hidden = false; }
@@ -123,18 +169,33 @@ Keep answers short and simple (a few sentences or a short list). Students use th
     q = (q || '').trim(); if (!q || busy) return;
     busy = true; add(q, 'me'); $('#helpIn').value = '';
     const m = add('Thinking…', 'bot typing');
+    let answer = '';
+    // 1) AI built into the browser (Chrome desktop), private and offline
     try {
       if (await aiAvailable()) {
         await answerAI(q, (t) => { m.classList.remove('typing'); m.textContent = t; log.scrollTop = log.scrollHeight; });
-        if (!m.textContent.trim() || m.classList.contains('typing')) { m.classList.remove('typing'); m.textContent = answerLocal(q); }
-      } else {
-        await new Promise((r) => setTimeout(r, 250));
-        m.classList.remove('typing'); m.textContent = answerLocal(q);
+        answer = m.textContent.trim();
       }
-    } catch (e) {
-      m.classList.remove('typing'); m.textContent = answerLocal(q);
+    } catch (e) { answer = ''; }
+    // 2) free online AI, works everywhere incl. phones
+    if (!answer && navigator.onLine !== false) {
+      try {
+        answer = await answerCloud(q, (n) => { m.textContent = n ? 'Still thinking… (the free AI is busy)' : 'Thinking hard…'; });
+        await typeOut(m, answer);
+      } catch (e) { answer = ''; }
     }
-    log.scrollTop = log.scrollHeight; busy = false;
+    // 3) built-in guide (offline / AI busy)
+    if (!answer) {
+      answer = answerLocal(q);
+      if (/^I'm not sure about that one/.test(answer)) {
+        answer = (navigator.onLine === false ? 'You\'re offline, so the AI can\'t answer right now.' : 'The free AI is busy right now. Try again in a minute.') +
+          '\n\nI can still help with:\n- saving or sending your work\n- importing a Word file\n- MLA / APA format\n- writing a thesis, intro or conclusion\n- layers, generators or templates';
+      }
+      m.classList.remove('typing'); m.textContent = answer;
+    }
+    history.push({ role: 'user', content: q }, { role: 'assistant', content: answer.slice(0, 1500) });
+    if (history.length > 16) history.splice(0, history.length - 16);
+    log.scrollTop = log.scrollHeight; busy = false; $('#helpIn').focus();
   }
   $('#helpForm').addEventListener('submit', (e) => { e.preventDefault(); ask($('#helpIn').value); });
 
