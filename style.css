@@ -532,3 +532,66 @@ h4 { font: 400 18px/1 var(--serif); letter-spacing: .05em; }
   .topbar .btn.sm, .topbar .icon-btn { padding: 4px 8px; font-size: 12px; }
   .help-fab { font-size: 18px; padding: 9px 16px 7px; }
 }
+
+/* ---------- animated tip bubbles ---------- */
+@keyframes tip-pop { 0% { transform: scale(.3) rotate(-8deg); opacity: 0; } 60% { transform: scale(1.08) rotate(2deg); opacity: 1; } 80% { transform: scale(.97) rotate(-1deg); } 100% { transform: scale(1) rotate(0); } }
+@keyframes tip-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -5px; } }
+@keyframes tip-out { to { transform: scale(.6) rotate(6deg); opacity: 0; } }
+@keyframes ants { to { background-position: 16px 0, -16px 100%, 0 -16px, 100% 16px; } }
+@keyframes ring-pulse { 0%, 100% { box-shadow: 0 0 0 0 var(--ink); } 50% { box-shadow: 0 0 0 5px transparent; } }
+@keyframes ring-pop { from { transform: scale(1.25); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes caret { 50% { opacity: 0; } }
+
+.tip-bubble {
+  position: fixed; z-index: 70; width: min(300px, calc(100vw - 16px));
+  background: var(--panel); color: var(--text); border: 3px solid var(--ink); border-radius: 22px;
+  box-shadow: 5px 5px 0 var(--ink); padding: 14px 16px 10px; font-weight: 700; font-size: 14.5px; line-height: 1.4;
+  transform-origin: var(--tail-x, 50%) 0;
+}
+.tip-bubble.above { transform-origin: var(--tail-x, 50%) 100%; }
+.tip-bubble.pop { animation: tip-pop .45s cubic-bezier(.2, 1.4, .4, 1) both, tip-float 2.6s ease-in-out .5s infinite; }
+.tip-bubble.out { animation: tip-out .16s ease-in forwards; }
+.tip-text { min-height: 2.8em; }
+.tip-text::after { content: "▌"; font-weight: 400; margin-left: 1px; animation: caret .8s steps(1) infinite; }
+.tip-foot { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.tip-count { font: 400 16px/1 var(--serif); letter-spacing: .06em; color: var(--dim); }
+.tip-skip { border: 0; background: none; cursor: pointer; font-weight: 700; color: var(--dim); text-decoration: underline; }
+.tip-skip:hover { color: var(--text); }
+.tip-next {
+  border: 2.5px solid var(--ink); background: var(--ink); color: var(--bg); border-radius: 6px;
+  padding: 5px 14px 3px; font: 400 18px/1 var(--serif); letter-spacing: .05em; cursor: pointer; box-shadow: 2px 2px 0 var(--dim);
+}
+.tip-next:hover { transform: translate(-1px, -1px) rotate(-2deg); }
+.tip-next:active { transform: translate(1px, 1px); box-shadow: none; }
+/* speech-bubble tail pointing at the target */
+.tip-tail, .tip-tail::after { position: absolute; width: 0; height: 0; border-style: solid; }
+.tip-tail { left: calc(var(--tail-x, 50%) - 14px); top: -20px; border-width: 0 14px 20px 14px; border-color: transparent transparent var(--ink) transparent; }
+.tip-tail::after { content: ""; left: -9px; top: 6px; border-width: 0 9px 13px 9px; border-color: transparent transparent var(--panel) transparent; }
+.tip-bubble.above .tip-tail { top: auto; bottom: -20px; border-width: 20px 14px 0 14px; border-color: var(--ink) transparent transparent transparent; }
+.tip-bubble.above .tip-tail::after { top: -20px; border-width: 13px 9px 0 9px; border-color: var(--panel) transparent transparent transparent; }
+
+/* highlight around the thing being explained: marching ink dashes + halftone glow */
+.tip-ring {
+  position: fixed; z-index: 69; pointer-events: none; border-radius: 10px;
+  background:
+    linear-gradient(90deg, var(--ink) 50%, transparent 0) repeat-x 0 0 / 16px 3px,
+    linear-gradient(90deg, var(--ink) 50%, transparent 0) repeat-x 0 100% / 16px 3px,
+    linear-gradient(0deg, var(--ink) 50%, transparent 0) repeat-y 0 0 / 3px 16px,
+    linear-gradient(0deg, var(--ink) 50%, transparent 0) repeat-y 100% 0 / 3px 16px;
+  transition: left .3s cubic-bezier(.3, 1.3, .5, 1), top .3s cubic-bezier(.3, 1.3, .5, 1), width .3s, height .3s;
+}
+.tip-ring::before {
+  content: ""; position: absolute; inset: -14px; z-index: -1; border-radius: 16px;
+  background: radial-gradient(circle, var(--ink) 1.3px, transparent 1.7px) 0 0 / 8px 8px; opacity: .35;
+  -webkit-mask-image: radial-gradient(closest-side, transparent 60%, #000 75%, transparent 100%);
+  mask-image: radial-gradient(closest-side, transparent 60%, #000 75%, transparent 100%);
+  animation: dots-drift 4s linear infinite;
+}
+.tip-ring.pop { animation: ants .6s linear infinite, ring-pop .3s ease-out both; }
+.tip-ring.out { opacity: 0; transition: opacity .15s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tip-bubble.pop, .tip-ring.pop, .tip-ring::before, .tip-text::after { animation: none !important; }
+  .tip-ring { transition: none; }
+}
+@media print { .tip-bubble, .tip-ring { display: none !important; } }

@@ -1,8 +1,8 @@
 /* LuidgotDOx service worker: makes the app installable and usable offline.
    Bump VERSION whenever site files change so people get the update. */
-const VERSION = 'ldx-v2';
+const VERSION = 'ldx-v3';
 const SHELL = [
-  './', './index.html', './style.css', './app.js', './art.js', './essay.js', './help.js', './pwa.js',
+  './', './index.html', './style.css', './app.js', './art.js', './essay.js', './help.js', './pwa.js', './tips.js',
   './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/favicon.png'
 ];
 
