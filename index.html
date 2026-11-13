@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free Studio</title>
+<meta name="description" content="Free art studio and essay writer. No account, no ads, works in your browser.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">🎨✍️ <b>Free Studio</b></div>
+  <nav class="tabs" role="tablist">
+    <button class="tab" data-view="home" role="tab">Home</button>
+    <button class="tab" data-view="art" role="tab">Art Studio</button>
+    <button class="tab" data-view="essay" role="tab">Essay Writer</button>
+  </nav>
+  <button id="themeBtn" class="icon-btn" title="Toggle dark mode">🌓</button>
+</header>
+
+<!-- HOME -->
+<main id="view-home" class="view">
+  <section class="hero">
+    <h1>Make art. Write essays. <span class="accent">Free.</span></h1>
+    <p>No account. No ads. Your work stays on your device.</p>
+    <div class="hero-cards">
+      <button class="card" data-go="art">
+        <div class="card-emoji">🎨</div>
+        <h2>Art Studio</h2>
+        <p>Brushes, layers, shapes, generators (palettes, patterns, gradients, prompts) and templates for thumbnails, posters, PFPs, wallpapers, memes and Roblox shirts.</p>
+        <span class="btn primary">Open studio →</span>
+      </button>
+      <button class="card" data-go="essay">
+        <div class="card-emoji">✍️</div>
+        <h2>Essay Writer</h2>
+        <p>Clean editor with templates (5-paragraph, argumentative, compare/contrast, lab report), MLA/APA formatting, word count goals and autosave.</p>
+        <span class="btn primary">Start writing →</span>
+      </button>
+    </div>
+  </section>
+</main>
+
+<!-- ART STUDIO -->
+<main id="view-art" class="view" hidden>
+  <div class="art-layout">
+    <aside class="panel left">
+      <h3>Tools</h3>
+      <div class="tool-grid" id="tools">
+        <button data-tool="brush" class="tool active" title="Brush (B)">🖌️<span>Brush</span></button>
+        <button data-tool="eraser" class="tool" title="Eraser (E)">🧽<span>Eraser</span></button>
+        <button data-tool="line" class="tool" title="Line (L)">📏<span>Line</span></button>
+        <button data-tool="rect" class="tool" title="Rectangle (R)">⬛<span>Rect</span></button>
+        <button data-tool="ellipse" class="tool" title="Ellipse (O)">⚪<span>Circle</span></button>
+        <button data-tool="fill" class="tool" title="Fill bucket (F)">🪣<span>Fill</span></button>
+        <button data-tool="text" class="tool" title="Text (T)">🔤<span>Text</span></button>
+        <button data-tool="picker" class="tool" title="Color picker (I)">💧<span>Pick</span></button>
+      </div>
+
+      <label class="field">Color <input type="color" id="color" value="#ff3d7f"></label>
+      <div class="swatches" id="swatches"></div>
+      <label class="field">Size <input type="range" id="size" min="1" max="120" value="12"><output id="sizeOut">12</output></label>
+      <label class="field">Opacity <input type="range" id="opacity" min="5" max="100" value="100"><output id="opOut">100%</output></label>
+      <label class="check"><input type="checkbox" id="shapeFill"> Filled shapes</label>
+      <div class="field col" id="textOpts">
+        <span>Font</span>
+        <select id="font">
+          <option value="Impact, 'Arial Black', sans-serif">Impact (memes)</option>
+          <option value="'Arial Black', Arial, sans-serif">Arial Black</option>
+          <option value="Georgia, serif">Georgia</option>
+          <option value="'Comic Sans MS', 'Comic Neue', cursive">Comic</option>
+          <option value="'Courier New', monospace">Courier</option>
+          <option value="system-ui, sans-serif">System</option>
+        </select>
+        <label class="check"><input type="checkbox" id="textStroke" checked> Outline text</label>
+      </div>
+
+      <h3>Layers</h3>
+      <ul id="layers" class="layers"></ul>
+      <div class="row">
+        <button id="addLayer" class="btn sm">+ Layer</button>
+        <button id="delLayer" class="btn sm">Delete</button>
+        <button id="clearLayer" class="btn sm">Clear</button>
+      </div>
+    </aside>
+
+    <section class="stage-wrap">
+      <div class="stage-bar">
+        <button id="undo" class="btn sm" title="Undo (Ctrl+Z)">↶ Undo</button>
+        <button id="redo" class="btn sm" title="Redo (Ctrl+Y)">↷ Redo</button>
+        <button id="gridBtn" class="btn sm" title="Pixel grid">▦ Grid</button>
+        <span class="dim" id="canvasInfo"></span>
+        <span class="spacer"></span>
+        <button id="newCanvas" class="btn sm">New…</button>
+        <button id="exportPng" class="btn sm primary">⬇ PNG</button>
+      </div>
+      <div class="stage" id="stage">
+        <div class="canvas-holder" id="holder">
+          <canvas id="view"></canvas>
+          <canvas id="overlay"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel right">
+      <div class="subtabs">
+        <button class="subtab active" data-sub="gen">⚡ Generators</button>
+        <button class="subtab" data-sub="tpl">🧩 Templates</button>
+      </div>
+
+      <div class="sub" id="sub-gen">
+        <div class="gen">
+          <h4>🎨 Palette</h4>
+          <div class="row">
+            <select id="palMode">
+              <option value="random">Random</option>
+              <option value="analogous">Analogous</option>
+              <option value="complementary">Complementary</option>
+              <option value="triadic">Triadic</option>
+              <option value="pastel">Pastel</option>
+              <option value="neon">Neon</option>
+              <option value="mono">Monochrome</option>
+            </select>
+            <button id="genPalette" class="btn sm">Generate</button>
+          </div>
+          <div class="palette" id="palette"></div>
+          <p class="hint">Click a color to use it. Palette also feeds the generators below.</p>
+        </div>
+
+        <div class="gen">
+          <h4>🌈 Gradient background</h4>
+          <div class="row">
+            <select id="gradType"><option value="linear">Linear</option><option value="radial">Radial</option><option value="mesh">Blobby mesh</option></select>
+            <button id="genGradient" class="btn sm">Fill layer</button>
+          </div>
+        </div>
+
+        <div class="gen">
+          <h4>🔷 Pattern</h4>
+          <div class="row">
+            <select id="patType">
+              <option value="dots">Polka dots</option>
+              <option value="stripes">Stripes</option>
+              <option value="checker">Checker</option>
+              <option value="waves">Waves</option>
+              <option value="confetti">Confetti</option>
+              <option value="stars">Stars</option>
+              <option value="triangles">Triangles</option>
+              <option value="noise">Pixel noise</option>
+            </select>
+            <button id="genPattern" class="btn sm">Fill layer</button>
+          </div>
+        </div>
+
+        <div class="gen">
+          <h4>✨ Random art</h4>
+          <div class="row">
+            <select id="artType">
+              <option value="circles">Bubble burst</option>
+              <option value="lines">Line flow</option>
+              <option value="mondrian">Block grid</option>
+              <option value="pixelcreature">Pixel creature</option>
+              <option value="galaxy">Galaxy</option>
+            </select>
+            <button id="genArt" class="btn sm">Generate</button>
+          </div>
+        </div>
+
+        <div class="gen">
+          <h4>💡 Art prompt</h4>
+          <p class="prompt" id="prompt">Press the button for an idea.</p>
+          <button id="genPrompt" class="btn sm">New idea</button>
+        </div>
+        <p class="hint">Generators draw on the <b>selected layer</b>. Undo works on all of them.</p>
+      </div>
+
+      <div class="sub" id="sub-tpl" hidden>
+        <div class="tpl-list" id="tplList"></div>
+        <p class="hint">Templates make a new canvas. Your current art is replaced (export it first!).</p>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<!-- ESSAY WRITER -->
+<main id="view-essay" class="view" hidden>
+  <div class="essay-layout">
+    <aside class="panel left">
+      <button id="newDoc" class="btn primary block">+ New essay</button>
+      <h3>My essays</h3>
+      <ul id="docList" class="doc-list"></ul>
+      <p class="hint">Saved in this browser only. Download a copy to keep it safe.</p>
+    </aside>
+
+    <section class="paper-wrap">
+      <div class="toolbar" id="etoolbar">
+        <select id="blockFmt" title="Paragraph style">
+          <option value="p">Paragraph</option>
+          <option value="h1">Title</option>
+          <option value="h2">Heading</option>
+          <option value="h3">Subheading</option>
+          <option value="blockquote">Quote</option>
+        </select>
+        <button data-cmd="bold" title="Bold (Ctrl+B)"><b>B</b></button>
+        <button data-cmd="italic" title="Italic (Ctrl+I)"><i>I</i></button>
+        <button data-cmd="underline" title="Underline (Ctrl+U)"><u>U</u></button>
+        <button data-cmd="strikeThrough" title="Strikethrough"><s>S</s></button>
+        <span class="sep"></span>
+        <button data-cmd="insertUnorderedList" title="Bullet list">• List</button>
+        <button data-cmd="insertOrderedList" title="Numbered list">1. List</button>
+        <span class="sep"></span>
+        <button data-cmd="justifyLeft" title="Align left">⇤</button>
+        <button data-cmd="justifyCenter" title="Center">↔</button>
+        <button data-cmd="justifyRight" title="Align right">⇥</button>
+        <button data-cmd="indent" title="Indent">→|</button>
+        <button data-cmd="outdent" title="Outdent">|←</button>
+        <span class="sep"></span>
+        <button data-cmd="undo" title="Undo">↶</button>
+        <button data-cmd="redo" title="Redo">↷</button>
+        <button data-cmd="removeFormat" title="Clear formatting">⌫ fmt</button>
+        <span class="spacer"></span>
+        <select id="styleMode" title="Formatting style">
+          <option value="normal">Normal style</option>
+          <option value="mla">MLA</option>
+          <option value="apa">APA</option>
+        </select>
+        <button id="focusBtn" title="Focus mode">🎯 Focus</button>
+      </div>
+
+      <div class="paper-scroll">
+        <article id="paper" class="paper" contenteditable="true" spellcheck="true" data-placeholder="Start writing, or pick a template →"></article>
+      </div>
+
+      <div class="statusbar">
+        <span id="wc">0 words</span>
+        <span id="cc">0 characters</span>
+        <span id="rt">0 min read</span>
+        <span id="goalWrap">Goal <input type="number" id="goal" min="0" step="50" placeholder="—"> <span class="goalbar"><span id="goalFill"></span></span></span>
+        <span class="spacer"></span>
+        <span id="saved" class="dim">Saved</span>
+      </div>
+    </section>
+
+    <aside class="panel right">
+      <h3>Templates</h3>
+      <div id="essayTpls" class="etpl-list"></div>
+
+      <h3>Heading info (MLA/APA)</h3>
+      <label class="field col">Your name <input id="hName" autocomplete="name"></label>
+      <label class="field col">Teacher <input id="hTeacher"></label>
+      <label class="field col">Class <input id="hClass"></label>
+      <label class="field col">Date <input id="hDate"></label>
+      <button id="insertHeading" class="btn sm block">Insert heading block</button>
+
+      <h3>Download</h3>
+      <div class="col-btns">
+        <button id="dlDoc" class="btn sm block">⬇ Word (.doc)</button>
+        <button id="dlPdf" class="btn sm block">🖨 PDF / Print</button>
+        <button id="dlTxt" class="btn sm block">⬇ Plain text (.txt)</button>
+        <button id="dlHtml" class="btn sm block">⬇ Web page (.html)</button>
+      </div>
+
+      <h3>Writing tips</h3>
+      <div id="tips" class="tips"></div>
+    </aside>
+  </div>
+</main>
+
+<div id="modal" class="modal" hidden>
+  <div class="modal-box">
+    <h3 id="modalTitle"></h3>
+    <div id="modalBody"></div>
+    <div class="row end">
+      <button id="modalCancel" class="btn sm">Cancel</button>
+      <button id="modalOk" class="btn sm primary">OK</button>
+    </div>
+  </div>
+</div>
+<div id="toast" class="toast" hidden></div>
+
+<script src="app.js"></script>
+<script src="art.js"></script>
+<script src="essay.js"></script>
+</body>
+</html>
