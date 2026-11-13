@@ -157,8 +157,8 @@
       const L = S.layers[i];
       const li = document.createElement('li');
       li.className = i === S.active ? 'active' : '';
-      li.innerHTML = `<button class="eye" title="Show/hide">${L.visible ? '👁️' : '🚫'}</button><span class="name"></span>` +
-        `<button class="eye up" title="Move up">▲</button><button class="eye dn" title="Move down">▼</button>`;
+      li.innerHTML = `<button class="eye" title="Show/hide">${L.visible ? 'Hide' : 'Show'}</button><span class="name"></span>` +
+        `<button class="eye up" title="Move up">Up</button><button class="eye dn" title="Move down">Down</button>`;
       li.querySelector('.name').textContent = L.name;
       li.onclick = () => { S.active = i; renderLayers(); };
       li.ondblclick = async () => {
@@ -622,45 +622,45 @@
 
   // ---------- templates ----------
   const TEMPLATES = [
-    { id: 'thumb', ico: '▶️', name: 'YouTube thumbnail', size: '1280×720', make() {
+    { id: 'thumb', name: 'YouTube thumbnail', size: '1280×720', make() {
       resetDoc(1280, 720); S.layers[0].ctx.save(); gradientBg(S.layers[0].ctx, 1280, 720); S.layers[0].ctx.restore();
       const t = S.layers[1]; t.name = 'Title';
       drawText(t.ctx, 'YOUR BIG\nTITLE HERE', 420, 360, 120, "Impact, 'Arial Black', sans-serif", '#ffffff', true);
       S.layers.push(newLayer('Drawing')); S.active = 2; S.guides = 'thumb';
     } },
-    { id: 'poster', ico: '📜', name: 'Poster / flyer', size: '1080×1350', make() {
+    { id: 'poster', name: 'Poster / flyer', size: '1080×1350', make() {
       resetDoc(1080, 1350); gradientBg(S.layers[0].ctx, 1080, 1350);
       const t = S.layers[1]; t.name = 'Text';
       drawText(t.ctx, 'EVENT NAME', 540, 220, 130, "Impact, 'Arial Black', sans-serif", '#ffffff', true);
       drawText(t.ctx, 'Saturday · 7 PM · Place', 540, 1180, 56, "'Arial Black', Arial, sans-serif", '#ffffff', true);
       S.layers.push(newLayer('Drawing')); S.active = 2;
     } },
-    { id: 'pfp', ico: '🙂', name: 'Profile picture', size: '1024×1024', make() {
+    { id: 'pfp', name: 'Profile picture', size: '1024×1024', make() {
       resetDoc(1024, 1024); gradientBg(S.layers[0].ctx, 1024, 1024, 'radial'); S.guides = 'circle';
     } },
-    { id: 'ig', ico: '📷', name: 'Instagram post', size: '1080×1080', make() { resetDoc(1080, 1080, '#ffffff'); } },
-    { id: 'wall', ico: '📱', name: 'Phone wallpaper / Story', size: '1080×1920', make() {
+    { id: 'ig', name: 'Instagram post', size: '1080×1080', make() { resetDoc(1080, 1080, '#ffffff'); } },
+    { id: 'wall', name: 'Phone wallpaper / Story', size: '1080×1920', make() {
       resetDoc(1080, 1920); meshBg(S.layers[0].ctx, 1080, 1920); S.guides = 'phone';
     } },
-    { id: 'desk', ico: '🖥️', name: 'Desktop wallpaper', size: '1920×1080', make() { resetDoc(1920, 1080); meshBg(S.layers[0].ctx, 1920, 1080); } },
-    { id: 'meme', ico: '😂', name: 'Meme', size: '1080×1080', make() {
+    { id: 'desk', name: 'Desktop wallpaper', size: '1920×1080', make() { resetDoc(1920, 1080); meshBg(S.layers[0].ctx, 1920, 1080); } },
+    { id: 'meme', name: 'Meme', size: '1080×1080', make() {
       resetDoc(1080, 1080, '#808080');
       S.layers[1].name = 'Picture';
       const t = newLayer('Meme text'); S.layers.push(t); S.active = 2;
       drawText(t.ctx, 'TOP TEXT', 540, 110, 110, "Impact, 'Arial Black', sans-serif", '#ffffff', true);
       drawText(t.ctx, 'BOTTOM TEXT', 540, 970, 110, "Impact, 'Arial Black', sans-serif", '#ffffff', true);
       S.active = 1;
-      setTimeout(() => toast('Click 🖼 Image to add your picture, then edit the text layer'), 300);
+      setTimeout(() => toast('Click Image to add your picture, then edit the text layer'), 300);
     } },
-    { id: 'shirt', ico: '👕', name: 'Roblox classic shirt', size: '585×559', make() {
+    { id: 'shirt', name: 'Roblox classic shirt', size: '585×559', make() {
       resetDoc(585, 559); S.guides = 'shirt'; S.layers[0].name = 'Shirt'; S.active = 0; S.layers.splice(1, 1);
       setTimeout(() => toast('The outlined boxes are guides only, they won\'t export. Paint inside them.'), 300);
     } },
-    { id: 'banner', ico: '🎮', name: 'Discord / Twitch banner', size: '960×540', make() { resetDoc(960, 540); gradientBg(S.layers[0].ctx, 960, 540); } },
-    { id: 'px32', ico: '👾', name: 'Pixel art 32×32', size: '32×32', make() { resetDoc(32, 32); } },
-    { id: 'px64', ico: '🕹️', name: 'Pixel art 64×64', size: '64×64', make() { resetDoc(64, 64); } },
-    { id: 'emote', ico: '😺', name: 'Emote / sticker', size: '112×112 → 512', make() { resetDoc(512, 512); S.guides = 'circle'; } },
-    { id: 'blank', ico: '⬜', name: 'Blank canvas', size: 'any size', make: () => newCanvasDialog() }
+    { id: 'banner', name: 'Discord / Twitch banner', size: '960×540', make() { resetDoc(960, 540); gradientBg(S.layers[0].ctx, 960, 540); } },
+    { id: 'px32', name: 'Pixel art 32×32', size: '32×32', make() { resetDoc(32, 32); } },
+    { id: 'px64', name: 'Pixel art 64×64', size: '64×64', make() { resetDoc(64, 64); } },
+    { id: 'emote', name: 'Emote / sticker', size: '512×512', make() { resetDoc(512, 512); S.guides = 'circle'; } },
+    { id: 'blank', name: 'Blank canvas', size: 'any size', make: () => newCanvasDialog() }
   ];
   function gradientBg(c, W, H, type) {
     const P = makePalette(pick(['analogous', 'neon', 'complementary']));
@@ -682,7 +682,7 @@
     const box = $('#tplList'); box.innerHTML = '';
     TEMPLATES.forEach((t) => {
       const b = document.createElement('button'); b.className = 'tpl';
-      b.innerHTML = `<span class="ico">${t.ico}</span><span><b>${t.name}</b><small>${t.size}</small></span>`;
+      b.innerHTML = `<span><b>${t.name}</b><small>${t.size}</small></span>`;
       b.onclick = async () => {
         if (S.dirty && t.id !== 'blank') {
           const ok = await modal('Start a new template?', '<p>This replaces what\'s on the canvas now. Save or export first if you want to keep it.</p>', { ok: 'Replace it' });
@@ -741,7 +741,7 @@
     if (Array.isArray(d.palette)) { S.palette = d.palette; renderPalette(); }
     if (before && !silent) undoStack.push(before);
     fit(); renderLayers(); render();
-    if (!silent) { changed(); toast('Art opened ✔'); } else S.dirty = false;
+    if (!silent) { changed(); toast('Art opened'); } else S.dirty = false;
   }
 
   async function exportPNG() {
@@ -753,7 +753,7 @@
 
   async function saveProject() {
     download(safeName(S.title, 'my-art') + '.fsart', JSON.stringify(projectData()), 'application/json');
-    toast('Project saved. Open it later with 📂 Open file to keep editing layers.');
+    toast('Project saved. Open it later with Open file to keep editing layers.');
   }
 
   async function importImage(file) {
@@ -776,16 +776,16 @@
     modal('Send it to yourself',
       `<p>Your browser can't open the share menu here, so the PNG was downloaded instead.</p>
        <p>To get it on another device: attach it to an email to yourself, upload it to Google Drive / iCloud, or AirDrop it.</p>
-       <p class="hint">On phones, 📤 Share opens the normal share menu (Messages, Drive, AirDrop, Discord…).</p>`, { cancel: null });
+       <p class="hint">On phones, Share opens the normal share menu (Messages, Drive, AirDrop, Discord…).</p>`, { cancel: null });
   }
 
   // extra buttons in the stage bar
   const bar = $('.stage-bar');
   const extra = document.createElement('span'); extra.className = 'row';
-  extra.innerHTML = `<button class="btn sm" id="artImport" title="Add a picture as a new layer">🖼 Image</button>
-    <button class="btn sm" id="artOpen" title="Open a saved .fsart project">📂 Open</button>
-    <button class="btn sm" id="artSave" title="Save project with layers (.fsart)">💾 Save</button>
-    <button class="btn sm" id="artShare" title="Send the picture to yourself or a friend">📤 Share</button>`;
+  extra.innerHTML = `<button class="btn sm" id="artImport" title="Add a picture as a new layer">Image</button>
+    <button class="btn sm" id="artOpen" title="Open a saved .fsart project">Open</button>
+    <button class="btn sm" id="artSave" title="Save project with layers (.fsart)">Save</button>
+    <button class="btn sm" id="artShare" title="Send the picture to yourself or a friend">Share</button>`;
   bar.insertBefore(extra, $('#exportPng'));
   $('#artImport').onclick = async () => importImage(await pickFile('image/*'));
   $('#artOpen').onclick = async () => { const f = await pickFile('.fsart,.json,application/json'); if (f) window.FS.openAnyFile(f); };

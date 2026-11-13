@@ -8,46 +8,56 @@
 <meta property="og:title" content="LuidgotDOx: free art studio + essay writer">
 <meta property="og:description" content="Make art and write essays for free. No account, no ads. By Timid Studios.">
 <meta property="og:url" content="https://liljrock888-gif.github.io/luidgotdox/">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="LuidgotDOx">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta property="og:image" content="https://liljrock888-gif.github.io/luidgotdox/icons/icon-512.png">
 <meta name="author" content="Timid Studios">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="#home" data-go="home"><span class="logo">✦</span><span class="brand-text"><b id="appName">LuidgotDOx</b><small>by Timid Studios</small></span></a>
+  <a class="brand" href="#home" data-go="home"><span class="brand-text"><b id="appName">LuidgotDOx</b><small>by Timid Studios</small></span></a>
   <nav class="tabs" role="tablist">
     <button class="tab" data-view="home" role="tab">Home</button>
     <button class="tab" data-view="art" role="tab">Art Studio</button>
     <button class="tab" data-view="essay" role="tab">Essay Writer</button>
   </nav>
-  <button id="themeBtn" class="icon-btn" title="Toggle dark mode">🌓</button>
+  <button id="themeBtn" class="icon-btn" title="Toggle dark mode">Dark</button>
 </header>
 
 <!-- HOME -->
 <main id="view-home" class="view">
   <section class="hero">
-    <h1>Make art. Write essays. <span class="accent">Free.</span></h1>
-    <p>No account. No ads. Your work stays on your device.</p>
+    <div class="title-wrap">
+      <div class="halftone" aria-hidden="true"><div class="halftone-wave"></div></div>
+      <div class="name-burst" aria-hidden="true"></div>
+      <h1><span class="logo-word">LuidgotDOx</span><span class="tagline">Make art. Write essays. <em>Free!</em></span></h1>
+    </div>
+    <p class="bubble">No account. No ads. Your work stays on your device.</p>
     <div class="hero-cards">
       <button class="card" data-go="art">
-        <div class="card-emoji">🎨</div>
-        <h2>Art Studio</h2>
+                <h2>Art Studio</h2>
         <p>Brushes, layers, shapes, generators (palettes, patterns, gradients, prompts) and templates for thumbnails, posters, PFPs, wallpapers, memes and Roblox shirts.</p>
-        <span class="btn primary">Open studio →</span>
+        <span class="btn primary">Open the studio</span>
       </button>
       <button class="card" data-go="essay">
-        <div class="card-emoji">✍️</div>
-        <h2>Essay Writer</h2>
+                <h2>Essay Writer</h2>
         <p>Clean editor with templates (5-paragraph, argumentative, compare/contrast, lab report), MLA/APA formatting, word count goals and autosave.</p>
-        <span class="btn primary">Start writing →</span>
+        <span class="btn primary">Start writing</span>
       </button>
     </div>
   </section>
   <footer class="site-foot">
-    <p>Made with 💜 by <a href="https://liljrock888-gif.github.io/timid-studio/" target="_blank" rel="noopener">Timid Studios</a></p>
+    <p>Made by <a href="https://liljrock888-gif.github.io/timid-studio/" target="_blank" rel="noopener">Timid Studios</a></p>
     <p class="dim">Free forever · No account · No ads · Your work never leaves your device unless you send it</p>
   </footer>
 </main>
@@ -58,14 +68,14 @@
     <aside class="panel left">
       <h3>Tools</h3>
       <div class="tool-grid" id="tools">
-        <button data-tool="brush" class="tool active" title="Brush (B)">🖌️<span>Brush</span></button>
-        <button data-tool="eraser" class="tool" title="Eraser (E)">🧽<span>Eraser</span></button>
-        <button data-tool="line" class="tool" title="Line (L)">📏<span>Line</span></button>
-        <button data-tool="rect" class="tool" title="Rectangle (R)">⬛<span>Rect</span></button>
-        <button data-tool="ellipse" class="tool" title="Ellipse (O)">⚪<span>Circle</span></button>
-        <button data-tool="fill" class="tool" title="Fill bucket (F)">🪣<span>Fill</span></button>
-        <button data-tool="text" class="tool" title="Text (T)">🔤<span>Text</span></button>
-        <button data-tool="picker" class="tool" title="Color picker (I)">💧<span>Pick</span></button>
+        <button data-tool="brush" class="tool active" title="Brush (B)">Brush</button>
+        <button data-tool="eraser" class="tool" title="Eraser (E)">Eraser</button>
+        <button data-tool="line" class="tool" title="Line (L)">Line</button>
+        <button data-tool="rect" class="tool" title="Rectangle (R)">Rectangle</button>
+        <button data-tool="ellipse" class="tool" title="Ellipse (O)">Circle</button>
+        <button data-tool="fill" class="tool" title="Fill bucket (F)">Fill</button>
+        <button data-tool="text" class="tool" title="Text (T)">Text</button>
+        <button data-tool="picker" class="tool" title="Color picker (I)">Eyedropper</button>
       </div>
 
       <label class="field">Color <input type="color" id="color" value="#ff3d7f"></label>
@@ -97,13 +107,13 @@
 
     <section class="stage-wrap">
       <div class="stage-bar">
-        <button id="undo" class="btn sm" title="Undo (Ctrl+Z)">↶ Undo</button>
-        <button id="redo" class="btn sm" title="Redo (Ctrl+Y)">↷ Redo</button>
-        <button id="gridBtn" class="btn sm" title="Pixel grid">▦ Grid</button>
+        <button id="undo" class="btn sm" title="Undo (Ctrl+Z)">Undo</button>
+        <button id="redo" class="btn sm" title="Redo (Ctrl+Y)">Redo</button>
+        <button id="gridBtn" class="btn sm" title="Pixel grid">Grid</button>
         <span class="dim" id="canvasInfo"></span>
         <span class="spacer"></span>
         <button id="newCanvas" class="btn sm">New…</button>
-        <button id="exportPng" class="btn sm primary">⬇ PNG</button>
+        <button id="exportPng" class="btn sm primary">Export PNG</button>
       </div>
       <div class="stage" id="stage">
         <div class="canvas-holder" id="holder">
@@ -115,13 +125,13 @@
 
     <aside class="panel right">
       <div class="subtabs">
-        <button class="subtab active" data-sub="gen">⚡ Generators</button>
-        <button class="subtab" data-sub="tpl">🧩 Templates</button>
+        <button class="subtab active" data-sub="gen">Generators</button>
+        <button class="subtab" data-sub="tpl">Templates</button>
       </div>
 
       <div class="sub" id="sub-gen">
         <div class="gen">
-          <h4>🎨 Palette</h4>
+          <h4>Palette</h4>
           <div class="row">
             <select id="palMode">
               <option value="random">Random</option>
@@ -139,7 +149,7 @@
         </div>
 
         <div class="gen">
-          <h4>🌈 Gradient background</h4>
+          <h4>Gradient background</h4>
           <div class="row">
             <select id="gradType"><option value="linear">Linear</option><option value="radial">Radial</option><option value="mesh">Blobby mesh</option></select>
             <button id="genGradient" class="btn sm">Fill layer</button>
@@ -147,7 +157,7 @@
         </div>
 
         <div class="gen">
-          <h4>🔷 Pattern</h4>
+          <h4>Pattern</h4>
           <div class="row">
             <select id="patType">
               <option value="dots">Polka dots</option>
@@ -164,7 +174,7 @@
         </div>
 
         <div class="gen">
-          <h4>✨ Random art</h4>
+          <h4>Random art</h4>
           <div class="row">
             <select id="artType">
               <option value="circles">Bubble burst</option>
@@ -178,7 +188,7 @@
         </div>
 
         <div class="gen">
-          <h4>💡 Art prompt</h4>
+          <h4>Art prompt</h4>
           <p class="prompt" id="prompt">Press the button for an idea.</p>
           <button id="genPrompt" class="btn sm">New idea</button>
         </div>
@@ -217,29 +227,29 @@
         <button data-cmd="underline" title="Underline (Ctrl+U)"><u>U</u></button>
         <button data-cmd="strikeThrough" title="Strikethrough"><s>S</s></button>
         <span class="sep"></span>
-        <button data-cmd="insertUnorderedList" title="Bullet list">• List</button>
-        <button data-cmd="insertOrderedList" title="Numbered list">1. List</button>
+        <button data-cmd="insertUnorderedList" title="Bullet list">Bullets</button>
+        <button data-cmd="insertOrderedList" title="Numbered list">Numbers</button>
         <span class="sep"></span>
-        <button data-cmd="justifyLeft" title="Align left">⇤</button>
-        <button data-cmd="justifyCenter" title="Center">↔</button>
-        <button data-cmd="justifyRight" title="Align right">⇥</button>
-        <button data-cmd="indent" title="Indent">→|</button>
-        <button data-cmd="outdent" title="Outdent">|←</button>
+        <button data-cmd="justifyLeft" title="Align left">Left</button>
+        <button data-cmd="justifyCenter" title="Center">Center</button>
+        <button data-cmd="justifyRight" title="Align right">Right</button>
+        <button data-cmd="indent" title="Indent">Indent</button>
+        <button data-cmd="outdent" title="Outdent">Outdent</button>
         <span class="sep"></span>
-        <button data-cmd="undo" title="Undo">↶</button>
-        <button data-cmd="redo" title="Redo">↷</button>
-        <button data-cmd="removeFormat" title="Clear formatting">⌫ fmt</button>
+        <button data-cmd="undo" title="Undo">Undo</button>
+        <button data-cmd="redo" title="Redo">Redo</button>
+        <button data-cmd="removeFormat" title="Clear formatting">Clear format</button>
         <span class="spacer"></span>
         <select id="styleMode" title="Formatting style">
           <option value="normal">Normal style</option>
           <option value="mla">MLA</option>
           <option value="apa">APA</option>
         </select>
-        <button id="focusBtn" title="Focus mode">🎯 Focus</button>
+        <button id="focusBtn" title="Focus mode">Focus</button>
       </div>
 
       <div class="paper-scroll">
-        <article id="paper" class="paper" contenteditable="true" spellcheck="true" data-placeholder="Start writing, or pick a template →"></article>
+        <article id="paper" class="paper" contenteditable="true" spellcheck="true" data-placeholder="Start writing, or pick a template"></article>
       </div>
 
       <div class="statusbar">
@@ -265,10 +275,10 @@
 
       <h3>Download</h3>
       <div class="col-btns">
-        <button id="dlDoc" class="btn sm block">⬇ Word (.doc)</button>
-        <button id="dlPdf" class="btn sm block">🖨 PDF / Print</button>
-        <button id="dlTxt" class="btn sm block">⬇ Plain text (.txt)</button>
-        <button id="dlHtml" class="btn sm block">⬇ Web page (.html)</button>
+        <button id="dlDoc" class="btn sm block">Word (.doc)</button>
+        <button id="dlPdf" class="btn sm block">PDF / Print</button>
+        <button id="dlTxt" class="btn sm block">Plain text (.txt)</button>
+        <button id="dlHtml" class="btn sm block">Web page (.html)</button>
       </div>
 
       <h3>Writing tips</h3>
@@ -292,5 +302,7 @@
 <script src="app.js"></script>
 <script src="art.js"></script>
 <script src="essay.js"></script>
+<script src="help.js"></script>
+<script src="pwa.js"></script>
 </body>
 </html>

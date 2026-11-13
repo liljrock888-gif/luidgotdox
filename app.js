@@ -166,10 +166,12 @@
     else delete document.documentElement.dataset.theme;
   }
   applyTheme(store.get('theme', null));
+  function themeLabel() { $('#themeBtn').textContent = document.documentElement.dataset.theme === 'dark' ? 'Light' : 'Dark'; }
+  themeLabel();
   $('#themeBtn').addEventListener('click', () => {
     const cur = document.documentElement.dataset.theme || 'light';
     const next = cur === 'dark' ? 'light' : 'dark';
-    applyTheme(next); store.set('theme', next);
+    applyTheme(next); store.set('theme', next); themeLabel();
   });
 
   // ---------- full backup (both tools) ----------
@@ -188,14 +190,14 @@
     try { data = JSON.parse(await file.text()); } catch (e) { toast('That file isn\'t a LuidgotDOx backup.'); return; }
     if (!data || data.app !== 'free-studio') { toast('That file isn\'t a LuidgotDOx backup.'); return; }
     for (const [k, p] of Object.entries(backupParts)) if (data[k]) await p.import(data[k]);
-    toast('Backup restored ✔');
+    toast('Backup restored');
   }
 
   // add backup buttons to the top bar
   const bk = document.createElement('div');
   bk.className = 'row';
-  bk.innerHTML = '<button class="btn sm" id="backupBtn" title="Download everything (essays + art) as one file">💾 Backup all</button>' +
-    '<button class="btn sm" id="restoreBtn" title="Open a backup or any saved LuidgotDOx file">📂 Open file</button>';
+  bk.innerHTML = '<button class="btn sm" id="backupBtn" title="Download everything (essays + art) as one file">Backup all</button>' +
+    '<button class="btn sm" id="restoreBtn" title="Open a backup or any saved LuidgotDOx file">Open file</button>';
   $('.topbar').insertBefore(bk, $('#themeBtn'));
   $('#backupBtn').addEventListener('click', exportAll);
   $('#restoreBtn').addEventListener('click', async () => {

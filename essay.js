@@ -45,7 +45,7 @@
   }
   function persist() {
     const ok = store.set('essays', docs); store.set('essayCur', curId);
-    $('#saved').textContent = ok ? 'Saved ✔' : '⚠ Couldn\'t autosave: download a copy!';
+    $('#saved').textContent = ok ? 'Saved' : 'Couldn\'t autosave: download a copy!';
   }
   function newDoc(html = '', extra = {}) {
     const d = { id: uid(), html, style: $('#styleMode').value || 'normal', goal: '', updated: Date.now(), ...extra };
@@ -72,7 +72,7 @@
     docs.forEach((d) => {
       const li = document.createElement('li'); li.className = d.id === curId ? 'active' : '';
       const when = new Date(d.updated).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-      li.innerHTML = `<div class="t"><b></b><small>${when}</small></div><button class="x" title="Delete">✕</button>`;
+      li.innerHTML = `<div class="t"><b></b><small>${when}</small></div><button class="x" title="Delete">Delete</button>`;
       li.querySelector('b').textContent = d.title;
       li.onclick = () => { saveNow(); openDoc(d.id); };
       li.querySelector('.x').onclick = async (e) => {
@@ -161,7 +161,7 @@
 
   // keyboard shortcuts
   paper.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); saveNow(); toast('Saved in this browser. Use ⬇ to keep a copy.'); }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); saveNow(); toast('Saved in this browser. Use Download to keep a copy.'); }
     if (e.key === 'Tab') { e.preventDefault(); document.execCommand(e.shiftKey ? 'outdent' : 'insertText', false, e.shiftKey ? null : ' '); }
   });
 
@@ -177,7 +177,7 @@
     paper.classList.toggle('focus-dim', on);
     $('#focusBtn').classList.toggle('on', on);
     if (!on) $$('.cur', paper).forEach((x) => x.classList.remove('cur'));
-    toast(on ? 'Focus mode on. Click 🎯 again to exit.' : 'Focus mode off');
+    toast(on ? 'Focus mode on. Click Focus again to exit.' : 'Focus mode off');
   };
 
   // ---------- heading info ----------
@@ -203,41 +203,41 @@
   const P = (s) => `<span class="ph">[${s}]</span>`;
   const para = (...s) => `<p>${s.join(' ')}</p>`;
   const TEMPLATES = [
-    { name: '📄 Blank', html: '<h1>' + P('Title') + '</h1><p><br></p>' },
-    { name: '🖐 5-paragraph essay', html:
+    { name: 'Blank', html: '<h1>' + P('Title') + '</h1><p><br></p>' },
+    { name: '5-paragraph essay', html:
       `<h1>${P('Title')}</h1>
       <h2>Introduction</h2>${para(P('Hook: a question, fact, or quote that grabs attention.'), P('Background: 1–2 sentences of context.'), P('Thesis: your main claim + your 3 reasons.'))}
       <h2>Body 1</h2>${para(P('Topic sentence for reason #1.'), P('Evidence: quote, fact, or example.'), P('Explain how the evidence proves your point.'), P('Transition to next paragraph.'))}
       <h2>Body 2</h2>${para(P('Topic sentence for reason #2.'), P('Evidence.'), P('Explanation.'), P('Transition.'))}
       <h2>Body 3</h2>${para(P('Topic sentence for reason #3.'), P('Evidence.'), P('Explanation.'), P('Transition.'))}
       <h2>Conclusion</h2>${para(P('Restate your thesis in new words.'), P('Sum up your 3 reasons.'), P('Final thought: why it matters / call to action.'))}` },
-    { name: '⚖️ Argumentative', html:
+    { name: 'Argumentative', html:
       `<h1>${P('Title')}</h1>
       ${para(P('Hook.'), P('Introduce the issue and why people disagree.'), P('Thesis: your position, stated clearly.'))}
       <h2>Reason 1</h2>${para(P('Claim.'), P('Evidence + source.'), P('Why this supports your side.'))}
       <h2>Reason 2</h2>${para(P('Claim.'), P('Evidence + source.'), P('Why this supports your side.'))}
       <h2>Counterargument</h2>${para(P('"Some people argue that…" (state the other side fairly).'), P('Rebuttal: why your side is still stronger.'))}
       <h2>Conclusion</h2>${para(P('Restate your position.'), P('What should happen next?'))}` },
-    { name: '🔀 Compare & contrast', html:
+    { name: 'Compare & contrast', html:
       `<h1>${P('A vs. B')}</h1>
       ${para(P('Introduce both subjects.'), P('Thesis: the most important similarity/difference.'))}
       <h2>Similarities</h2>${para(P('Point 1: how A and B are alike + examples.'), P('Point 2.'))}
       <h2>Differences</h2>${para(P('Point 1: how A is different from B + examples.'), P('Point 2.'))}
       <h2>Conclusion</h2>${para(P('What comparing them teaches us.'))}` },
-    { name: '📖 Narrative / personal', html:
+    { name: 'Narrative / personal', html:
       `<h1>${P('Title')}</h1>
       ${para(P('Open in the middle of the action or with a strong detail.'))}
       ${para(P('Set the scene: where, when, who.'))}
       ${para(P('Rising action: what happened, step by step. Use senses: sight, sound, smell.'))}
       ${para(P('Climax: the most important moment.'))}
       ${para(P('Reflection: what you learned or how you changed.'))}` },
-    { name: '📚 Book report', html:
+    { name: 'Book report', html:
       `<h1>${P('Book Title')} by ${P('Author')}</h1>
       <h2>Summary</h2>${para(P('Main characters, setting, and what happens (no spoilers past the middle if asked).'))}
       <h2>Themes</h2>${para(P('A big idea in the book + an example scene.'))}
       <h2>Favorite part</h2>${para(P('A moment you liked and why.'))}
       <h2>Recommendation</h2>${para(P('Who should read it? Rating out of 5?'))}` },
-    { name: '🧪 Lab report', html:
+    { name: 'Lab report', html:
       `<h1>${P('Lab Title')}</h1>
       <h2>Question / Purpose</h2>${para(P('What are you trying to find out?'))}
       <h2>Hypothesis</h2>${para(P('If …, then …, because …'))}
@@ -245,7 +245,7 @@
       <h2>Procedure</h2><ol><li>${P('Step')}</li><li>${P('Step')}</li><li>${P('Step')}</li></ol>
       <h2>Data / Results</h2>${para(P('What you measured. Describe any patterns.'))}
       <h2>Conclusion</h2>${para(P('Was your hypothesis supported? Sources of error? What would you change?'))}` },
-    { name: '🔎 Research paper', html:
+    { name: 'Research paper', html:
       `<h1>${P('Title')}</h1>
       <h2>Introduction</h2>${para(P('Topic background.'), P('Research question / thesis.'))}
       <h2>${P('Section 1 heading')}</h2>${para(P('Point + evidence (Author page#).'))}
@@ -253,7 +253,7 @@
       <h2>${P('Section 3 heading')}</h2>${para(P('Point + evidence (Author page#).'))}
       <h2>Conclusion</h2>${para(P('Answer your research question.'))}
       <h2>Works Cited</h2>${para(P('Last, First. "Title of Article." Website or Journal, Date, URL.'))}${para(P('Last, First. Book Title. Publisher, Year.'))}` },
-    { name: '💌 Letter / email', html:
+    { name: 'Letter / email', html:
       `<p>Dear ${P('Name')},</p>${para(P('Why you\'re writing.'))}${para(P('Details.'))}${para(P('What you\'d like to happen next.'))}<p>Sincerely,</p><p>${P('Your name')}</p>` }
   ];
   function renderTpls() {
@@ -272,7 +272,7 @@
         }
         stats(); saveNow();
         const first = $('.ph', paper); if (first) first.click();
-        toast('Click any [highlighted box] to replace it with your writing');
+        toast('Click any highlighted [box] to replace it with your writing');
       };
       box.appendChild(b);
     });
@@ -281,7 +281,7 @@
   // ---------- tips ----------
   const TIPS = [
     'Your thesis = your claim + your reasons. One sentence.',
-    'Every body paragraph: point → evidence → explanation.',
+    'Every body paragraph: point, evidence, explanation.',
     'Use transitions: "Furthermore", "However", "As a result", "In contrast".',
     'Read your essay out loud. You\'ll catch mistakes your eyes miss.',
     'Don\'t start the conclusion with "In conclusion". Restate the thesis in new words instead.',
@@ -294,7 +294,7 @@
   ];
   function renderTips() {
     const t = TIPS.slice().sort(() => Math.random() - .5).slice(0, 3);
-    $('#tips').innerHTML = t.map((x) => `<p>💡 ${esc(x)}</p>`).join('');
+    $('#tips').innerHTML = t.map((x) => `<p>${esc(x)}</p>`).join('');
   }
 
   // ---------- exports ----------
@@ -333,7 +333,7 @@
     if (!data || typeof data.html !== 'string') { toast('That essay file looks broken.'); return; }
     saveNow();
     newDoc(sanitize(data.html), { style: data.style || 'normal', goal: data.goal || '' });
-    toast('Essay opened ✔');
+    toast('Essay opened');
   }
   async function importFile(f) {
     if (!f) return;
@@ -344,17 +344,17 @@
         toast('Reading Word file…');
         await loadScript('https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js');
         const res = await window.mammoth.convertToHtml({ arrayBuffer: await f.arrayBuffer() });
-        saveNow(); newDoc(sanitize(res.value)); toast('Word file imported ✔'); return;
+        saveNow(); newDoc(sanitize(res.value)); toast('Word file imported'); return;
       }
       if (name.endsWith('.doc')) {
         const txt = await f.text();
-        if (/<html/i.test(txt)) { saveNow(); newDoc(sanitize(txt.replace(/^[\s\S]*<body[^>]*>/i, '').replace(/<\/body>[\s\S]*$/i, ''))); toast('Imported ✔'); return; }
+        if (/<html/i.test(txt)) { saveNow(); newDoc(sanitize(txt.replace(/^[\s\S]*<body[^>]*>/i, '').replace(/<\/body>[\s\S]*$/i, ''))); toast('Imported'); return; }
         toast('Old .doc files can\'t be read. Save it as .docx first.'); return;
       }
       if (name.endsWith('.html') || name.endsWith('.htm')) {
         const txt = await f.text();
         const body = (txt.match(/<body[^>]*>([\s\S]*)<\/body>/i) || [, txt])[1];
-        saveNow(); newDoc(sanitize(body)); toast('Imported ✔'); return;
+        saveNow(); newDoc(sanitize(body)); toast('Imported'); return;
       }
       if (name.endsWith('.md')) {
         const txt = await f.text();
@@ -362,9 +362,9 @@
           const m = b.match(/^(#{1,3})\s+(.*)/); if (m) return `<h${m[1].length}>${esc(m[2])}</h${m[1].length}>`;
           return `<p>${esc(b).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\*(.+?)\*/g, '<i>$1</i>').replace(/\n/g, '<br>')}</p>`;
         }).join('');
-        saveNow(); newDoc(sanitize(html)); toast('Imported ✔'); return;
+        saveNow(); newDoc(sanitize(html)); toast('Imported'); return;
       }
-      saveNow(); newDoc(textToHtml(await f.text())); toast('Imported ✔');
+      saveNow(); newDoc(textToHtml(await f.text())); toast('Imported');
     } catch (e) {
       toast(name.endsWith('.docx') ? 'Couldn\'t read that Word file (need internet the first time).' : 'Couldn\'t read that file.');
     }
@@ -376,10 +376,10 @@
     const d = curDoc();
     const ok = await modal('Send / share this essay',
       `<div class="col-btns">
-        <button class="btn sm block" data-s="email">📧 Email it to myself</button>
-        <button class="btn sm block" data-s="share">📤 Share (phone: Messages, Drive, AirDrop…)</button>
-        <button class="btn sm block" data-s="link">🔗 Copy a link that contains this essay</button>
-        <button class="btn sm block" data-s="file">💾 Download editable copy (.fsdoc)</button>
+        <button class="btn sm block" data-s="email">Email it to myself</button>
+        <button class="btn sm block" data-s="share">Share (phone: Messages, Drive, AirDrop)</button>
+        <button class="btn sm block" data-s="link">Copy a link that contains this essay</button>
+        <button class="btn sm block" data-s="file">Download editable copy (.fsdoc)</button>
       </div>
       <p class="hint">Nothing is uploaded to us. Email/share use your own apps; the link holds the essay inside it.</p>`,
       { ok: 'Close', cancel: null, onOpen: (box) => {
@@ -416,7 +416,7 @@
     }
     if (kind === 'file') {
       download(fname() + '.fsdoc', JSON.stringify(docData(d)), 'application/json');
-      toast('Saved. Open it with 📂 to keep editing on any device.');
+      toast('Saved. Open it with Open file to keep editing on any device.');
     }
   }
 
@@ -438,9 +438,9 @@
   // extra buttons
   const dl = $('.col-btns');
   const more = document.createElement('div'); more.className = 'col-btns'; more.style.marginTop = '6px';
-  more.innerHTML = `<button id="eSend" class="btn sm block primary">📤 Send to myself / share</button>
-    <button id="eSave" class="btn sm block">💾 Save editable copy (.fsdoc)</button>
-    <button id="eImport" class="btn sm block">📂 Import (.docx, .txt, .html, .md, .fsdoc)</button>`;
+  more.innerHTML = `<button id="eSend" class="btn sm block primary">Send to myself / share</button>
+    <button id="eSave" class="btn sm block">Save editable copy (.fsdoc)</button>
+    <button id="eImport" class="btn sm block">Import a file</button>`;
   dl.after(more);
   $('#eSend').onclick = sendDialog;
   $('#eSave').onclick = () => { saveNow(); doSend('file', curDoc()); };
