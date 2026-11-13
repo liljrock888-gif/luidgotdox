@@ -37,7 +37,7 @@
   const STOP = new Set('a an the i my me to do how can is it in on of for and or you what where why with this that does get make use your'.split(' '));
   const words = (s) => s.toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').split(/\s+/).filter((w) => w && !STOP.has(w));
 
-  function answerLocal(q) {
+  function matchLocal(q, min = 2) {
     const qw = words(q);
     let best = null, bestScore = 0;
     for (const item of KB) {
@@ -49,7 +49,11 @@
       }
       if (s > bestScore) { bestScore = s; best = item; }
     }
-    if (best && bestScore >= 2) return best.a;
+    return best && bestScore >= min ? best.a : null;
+  }
+  function answerLocal(q) {
+    const hit = matchLocal(q);
+    if (hit) return hit;
     if (/^(hi|hey|hello|yo|sup)\b/i.test(q.trim())) return 'Hey! Ask me how to do anything on LuidgotDOx: saving, sending an essay to yourself, MLA format, layers, Roblox shirts, and more.';
     return 'I\'m not sure about that one. Try asking about:\n- saving or sending your work\n- importing a Word file\n- MLA / APA format\n- writing a thesis, intro or conclusion\n- layers, generators or templates in the Art Studio';
   }
@@ -92,30 +96,75 @@ Style: short, simple and friendly (a few sentences or a short numbered list), pl
     .replace(/\*\*(.+?)\*\*/g, '$1').replace(/__(.+?)__/g, '$1')      // markdown bold
     .replace(/^#{1,6}\s*/gm, '').replace(/^\s*[*-]\s+/gm, '- ')      // headings, bullets
     .replace(/`([^`]+)`/g, '$1').trim();
-  async function answerCloud(q, onWait) {
+  async function readStream(res, onChunk) {
+    // Server-Sent Events: lines like  data: {"choices":[{"delta":{"content":"..."}}]}
+    const reader = res.body.getReader(), dec = new TextDecoder();
+    let buf = '', out = '';
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let nl;
+      while ((nl = buf.indexOf('\n')) >= 0) {
+        const line = buf.slice(0, nl).trim(); buf = buf.slice(nl + 1);
+        if (!line.startsWith('data:')) continue;
+        const d = line.slice(5).trim();
+        if (d === '[DONE]') return out;
+        try {
+          const j = JSON.parse(d);
+          const c = j.choices && j.choices[0] && j.choices[0].delta && j.choices[0].delta.content;
+          if (c) { out += c; onChunk(tidy(out)); }
+        } catch (e) { /* partial or keep-alive line */ }
+      }
+    }
+    return out;
+  }
+  // onBusy(attempt) is called when the free tier asks us to wait; if it returns a string, we use that instead of waiting
+  async function answerCloud(q, onChunk, onBusy, outer) {
     const body = JSON.stringify({
-      model: 'openai', referrer: 'luidgotdox',
+      model: 'openai', referrer: 'luidgotdox', stream: true,
       messages: [{ role: 'system', content: SYSTEM }, ...history.slice(-8), { role: 'user', content: q }]
     });
-    // the free tier sometimes refuses a request that comes right after another one: wait and retry
     for (let attempt = 0; attempt < 4; attempt++) {
+      if (outer && outer.aborted) throw new Error('stopped');
       const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 25000);
+      let timer = setTimeout(() => ctrl.abort(), 12000);
+      const stop = () => ctrl.abort();
+      if (outer) outer.addEventListener('abort', stop, { once: true });
       try {
-        const res = await fetch(CLOUD, { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctrl.signal, body });
+        let res;
+        try {
+          res = await fetch(CLOUD, { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctrl.signal, body });
+        } catch (err) {
+          if (outer && outer.aborted) throw err;
+          if (ctrl.signal.aborted) {   // stuck in the free tier's queue: ask again
+            const quick = onBusy && onBusy(attempt);
+            if (quick) return { text: quick, quick: true };
+            continue;
+          }
+          throw err;
+        }
+        clearTimeout(timer); timer = setTimeout(() => ctrl.abort(), 40000);
         if (res.status === 402 || res.status === 429 || res.status >= 500) {
+          const quick = onBusy && onBusy(attempt);
+          if (quick) return { text: quick, quick: true };
           const ra = parseFloat(res.headers.get('Retry-After'));
-          const wait = Math.min(15000, (ra > 0 ? ra * 1000 : 0) || [4000, 6000, 8000, 8000][attempt]);   // ~15s covers the free tier's cooldown
-          if (onWait) onWait(attempt);
+          const wait = Math.min(15000, (ra > 0 ? ra * 1000 : 0) || [4000, 6000, 8000, 8000][attempt]);
           await new Promise((r) => setTimeout(r, wait));
           continue;
         }
         if (!res.ok) throw new Error('http ' + res.status);
-        const data = await res.json();
-        const text = tidy(data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content);
+        let text;
+        if ((res.headers.get('content-type') || '').includes('text/event-stream') && res.body) {
+          text = tidy(await readStream(res, onChunk));
+        } else {
+          const data = await res.json();
+          text = tidy(data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content);
+          if (text) await onChunk(text, true);
+        }
         if (!text) throw new Error('empty');
-        return text;
-      } finally { clearTimeout(timer); }
+        return { text };
+      } finally { clearTimeout(timer); if (outer) outer.removeEventListener('abort', stop); }
     }
     throw new Error('busy');
   }
@@ -180,14 +229,32 @@ Style: short, simple and friendly (a few sentences or a short numbered list), pl
     } catch (e) { answer = ''; }
     // 2) free online AI, works everywhere incl. phones
     if (!answer && navigator.onLine !== false) {
+      // a strong match in the built-in guide (2+ keywords) can stand in when the free AI is slow or busy
+      const quick = matchLocal(q, 4);
+      const outer = new AbortController();
+      const slow = setTimeout(() => { if (quick && m.classList.contains('typing')) outer.abort(); }, 8000);
       try {
-        answer = await answerCloud(q, (n) => { m.textContent = n ? 'Still thinking… (the free AI is busy)' : 'Thinking hard…'; });
-        await typeOut(m, answer);
-      } catch (e) { answer = ''; }
+        const show = (t, whole) => {
+          if (whole) return typeOut(m, t);
+          m.classList.remove('typing'); m.textContent = t; log.scrollTop = log.scrollHeight;
+        };
+        const r = await answerCloud(q, show, (n) => {
+          const hit = quick;
+          if (hit) return hit;   // instant answer from the built-in guide instead of waiting on the free AI
+          m.textContent = n ? 'Still thinking… (the free AI is busy, a few more seconds)' : 'Thinking hard…';
+          return null;
+        }, outer.signal);
+        answer = r.text;
+        if (r.quick) { m.classList.remove('typing'); m.textContent = answer; }
+        else m.textContent = answer;
+      } catch (e) {
+        answer = m.classList.contains('typing') ? '' : m.textContent.trim();
+        if (!answer && quick) { answer = quick; m.classList.remove('typing'); m.textContent = answer; }
+      } finally { clearTimeout(slow); }
     }
     // 3) built-in guide (offline / AI busy)
     if (!answer) {
-      answer = answerLocal(q);
+      answer = navigator.onLine === false ? answerLocal(q) : (matchLocal(q, 4) || answerLocal(q.match(/^(hi|hey|hello|yo|sup)\b/i) ? q : ''));
       if (/^I'm not sure about that one/.test(answer)) {
         answer = (navigator.onLine === false ? 'You\'re offline, so the AI can\'t answer right now.' : 'The free AI is busy right now. Try again in a minute.') +
           '\n\nI can still help with:\n- saving or sending your work\n- importing a Word file\n- MLA / APA format\n- writing a thesis, intro or conclusion\n- layers, generators or templates';
