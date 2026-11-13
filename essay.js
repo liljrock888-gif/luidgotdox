@@ -1,4 +1,4 @@
-/* Free Studio — Essay Writer */
+/* LuidgotDOx — Essay Writer */
 (function () {
   'use strict';
   const { $, $$, store, toast, modal, download, pickFile, safeName, shareFile, packText, unpackText, copy, loadScript } = window.FS;

@@ -1,4 +1,4 @@
-/* Free Studio — shared helpers: tabs, theme, modal, toast, storage, files, sharing */
+/* LuidgotDOx — shared helpers: tabs, theme, modal, toast, storage, files, sharing */
 (function () {
   'use strict';
   const $ = (s, r = document) => r.querySelector(s);
@@ -180,13 +180,13 @@
     const data = { app: 'free-studio', kind: 'backup', version: 1, savedAt: new Date().toISOString() };
     for (const [k, p] of Object.entries(backupParts)) data[k] = await p.export();
     const d = new Date().toISOString().slice(0, 10);
-    download(`free-studio-backup-${d}.freestudio`, JSON.stringify(data), 'application/json');
+    download(`luidgotdox-backup-${d}.freestudio`, JSON.stringify(data), 'application/json');
     toast('Backup downloaded. Keep it somewhere safe (Drive, email, USB).');
   }
   async function importAll(file) {
     let data;
-    try { data = JSON.parse(await file.text()); } catch (e) { toast('That file isn\'t a Free Studio backup.'); return; }
-    if (!data || data.app !== 'free-studio') { toast('That file isn\'t a Free Studio backup.'); return; }
+    try { data = JSON.parse(await file.text()); } catch (e) { toast('That file isn\'t a LuidgotDOx backup.'); return; }
+    if (!data || data.app !== 'free-studio') { toast('That file isn\'t a LuidgotDOx backup.'); return; }
     for (const [k, p] of Object.entries(backupParts)) if (data[k]) await p.import(data[k]);
     toast('Backup restored ✔');
   }
@@ -195,7 +195,7 @@
   const bk = document.createElement('div');
   bk.className = 'row';
   bk.innerHTML = '<button class="btn sm" id="backupBtn" title="Download everything (essays + art) as one file">💾 Backup all</button>' +
-    '<button class="btn sm" id="restoreBtn" title="Open a backup or any saved Free Studio file">📂 Open file</button>';
+    '<button class="btn sm" id="restoreBtn" title="Open a backup or any saved LuidgotDOx file">📂 Open file</button>';
   $('.topbar').insertBefore(bk, $('#themeBtn'));
   $('#backupBtn').addEventListener('click', exportAll);
   $('#restoreBtn').addEventListener('click', async () => {
@@ -203,15 +203,15 @@
     if (f) openAnyFile(f);
   });
 
-  // route any dropped/opened Free Studio file to the right tool
+  // route any dropped/opened LuidgotDOx file to the right tool
   async function openAnyFile(f) {
     let data;
     try { data = JSON.parse(await f.text()); } catch (e) { toast('Can\'t read that file.'); return; }
-    if (!data || data.app !== 'free-studio') { toast('That isn\'t a Free Studio file.'); return; }
+    if (!data || data.app !== 'free-studio') { toast('That isn\'t a LuidgotDOx file.'); return; }
     if (data.kind === 'backup') return importAll(f);
     if (data.kind === 'essay' && window.FS.essay) { show('essay'); return window.FS.essay.importDoc(data); }
     if (data.kind === 'art' && window.FS.art) { show('art'); return window.FS.art.loadProject(data); }
-    toast('Unknown Free Studio file.');
+    toast('Unknown LuidgotDOx file.');
   }
 
   window.FS = {

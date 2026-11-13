@@ -1,4 +1,4 @@
-/* Free Studio — Art Studio */
+/* LuidgotDOx — Art Studio */
 (function () {
   'use strict';
   const { $, $$, store, toast, modal, download, pickFile, readDataURL, safeName, shareFile } = window.FS;
