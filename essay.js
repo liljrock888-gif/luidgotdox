@@ -272,7 +272,7 @@
         }
         stats(); saveNow();
         const first = $('.ph', paper); if (first) first.click();
-        toast('Click any [purple box] to replace it with your writing');
+        toast('Click any [highlighted box] to replace it with your writing');
       };
       box.appendChild(b);
     });

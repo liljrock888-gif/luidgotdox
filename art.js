@@ -51,7 +51,7 @@
 
   // ---------- display ----------
   function fit() {
-    const pad = 40;
+    const pad = 60;
     const aw = Math.max(100, stage.clientWidth - pad), ah = Math.max(100, stage.clientHeight - pad);
     let s = Math.min(aw / S.W, ah / S.H);
     if (pixelMode()) s = Math.max(1, Math.floor(s));
@@ -654,7 +654,7 @@
     } },
     { id: 'shirt', ico: '👕', name: 'Roblox classic shirt', size: '585×559', make() {
       resetDoc(585, 559); S.guides = 'shirt'; S.layers[0].name = 'Shirt'; S.active = 0; S.layers.splice(1, 1);
-      setTimeout(() => toast('Purple boxes are guides only, they won\'t export. Paint inside them.'), 300);
+      setTimeout(() => toast('The outlined boxes are guides only, they won\'t export. Paint inside them.'), 300);
     } },
     { id: 'banner', ico: '🎮', name: 'Discord / Twitch banner', size: '960×540', make() { resetDoc(960, 540); gradientBg(S.layers[0].ctx, 960, 540); } },
     { id: 'px32', ico: '👾', name: 'Pixel art 32×32', size: '32×32', make() { resetDoc(32, 32); } },
