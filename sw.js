@@ -1,13 +1,14 @@
 /* LuidgotDOx service worker: makes the app installable and usable offline.
-   Bump VERSION whenever site files change so people get the update. */
-const VERSION = 'ldx-v10';
+   Bump VERSION whenever site files change so people get the update,
+   and bump the ?v= number on the script/style tags in index.html to match. */
+const VERSION = 'ldx-v11';
 const SHELL = [
   './', './index.html', './style.css', './app.js', './art.js', './manga.js', './essay.js', './help.js', './pwa.js', './tips.js',
   './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/favicon.png'
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL.map((u) => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (e) => {
@@ -28,12 +29,22 @@ self.addEventListener('fetch', (e) => {
   // Network first for the page itself (so updates show up), fall back to cache offline.
   if (req.mode === 'navigate') {
     e.respondWith(
-      fetch(req).then((res) => { const copy = res.clone(); caches.open(VERSION).then((c) => c.put('./index.html', copy)); return res; })
+      fetch(req, { cache: 'no-cache' }).then((res) => { const copy = res.clone(); caches.open(VERSION).then((c) => c.put('./index.html', copy)); return res; })
         .catch(() => caches.match('./index.html'))
     );
     return;
   }
-  // Stale-while-revalidate for everything else.
+  // The app's own files: network first so an update never mixes old and new scripts; cache when offline.
+  if (sameOrigin) {
+    e.respondWith(
+      fetch(req, { cache: 'no-cache' }).then((res) => {
+        if (res && res.ok) { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy)); }
+        return res;
+      }).catch(() => caches.match(req).then((hit) => hit || caches.match(req, { ignoreSearch: true })))
+    );
+    return;
+  }
+  // Fonts / CDN libraries: stale-while-revalidate.
   e.respondWith(
     caches.match(req).then((hit) => {
       const net = fetch(req).then((res) => {
