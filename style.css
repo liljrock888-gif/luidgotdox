@@ -628,3 +628,46 @@ h4 { font: 400 18px/1 var(--serif); letter-spacing: .05em; }
 .mg-sel .row { margin-top: 6px; }
 .mg-sub textarea#mgAiPrompt { width: 100%; resize: vertical; min-height: 64px; margin-bottom: 8px; }
 @media (max-width: 1000px) { .manga-layout > .stage-wrap { order: 1; } .mg-layouts { grid-template-columns: repeat(6, 1fr); } }
+
+/* =====================================================================
+   CYBER THEME: neon cyan lines, magenta glow, dark violet panels
+   ===================================================================== */
+:root[data-theme="cyber"] {
+  --bg: #07051a; --panel: #0e0b26; --panel2: #151036; --hover: #1d1645;
+  --text: #e8f6ff; --dim: #9ab0d6; --line: #2de2ff;
+  --accent: #2de2ff; --accent-soft: #1d1645; --accentText: #07051a;
+  --paper: #ffffff; --stage: #05031a; --ph-bg: #2a1450; --ph-text: #ffe6ff; --link: #ff4fd8;
+  --ink: #2de2ff; --dot: rgba(255, 79, 216, .16);
+  --neon2: #ff4fd8; --neon3: #ffe14f;
+  --shadow: 3px 3px 0 var(--neon2), 0 0 12px rgba(45, 226, 255, .25);
+  --shadow-lg: 6px 6px 0 var(--neon2), 0 0 24px rgba(45, 226, 255, .3);
+  --serif: "Orbitron", "Bangers", sans-serif;
+  --comic: "Share Tech Mono", "Comic Neue", monospace;
+}
+:root[data-theme="cyber"] body {
+  background:
+    linear-gradient(rgba(45, 226, 255, .05) 1px, transparent 1px) 0 0 / 100% 4px,
+    radial-gradient(1200px 600px at 85% -10%, #2a0f4f 0%, transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, #06294a 0%, transparent 60%), var(--bg);
+  letter-spacing: .01em;
+}
+:root[data-theme="cyber"] .brand b { color: var(--bg); -webkit-text-stroke: 1.4px var(--ink); text-shadow: 0 0 10px var(--ink), 2px 2px 0 var(--neon2); }
+:root[data-theme="cyber"] .logo-word { color: var(--bg); -webkit-text-stroke: 2px var(--ink); text-shadow: 0 0 18px var(--ink), 5px 5px 0 var(--neon2); }
+:root[data-theme="cyber"] .tagline em, :root[data-theme="cyber"] h3, :root[data-theme="cyber"] h4 { color: var(--neon2); text-shadow: 0 0 8px rgba(255, 79, 216, .6); }
+:root[data-theme="cyber"] .tab, :root[data-theme="cyber"] .subtab { font-weight: 700; font-size: 16px; letter-spacing: .12em; }
+:root[data-theme="cyber"] .tab.active { background: var(--ink); color: var(--bg); box-shadow: 3px 3px 0 var(--neon2), 0 0 16px var(--ink); }
+:root[data-theme="cyber"] .btn.primary, :root[data-theme="cyber"] .tool.active, :root[data-theme="cyber"] .btn.on { box-shadow: 3px 3px 0 var(--neon2), 0 0 14px var(--ink) !important; }
+:root[data-theme="cyber"] .btn:hover, :root[data-theme="cyber"] .tool:hover { box-shadow: 4px 4px 0 var(--neon2), 0 0 12px var(--ink); }
+:root[data-theme="cyber"] .card h2 { font-size: 34px; letter-spacing: .06em; color: var(--ink); text-shadow: 0 0 10px rgba(45, 226, 255, .55); }
+:root[data-theme="cyber"] .card:hover { box-shadow: 9px 9px 0 var(--neon2), 0 0 26px var(--ink); }
+:root[data-theme="cyber"] .name-burst::before { background: linear-gradient(135deg, var(--ink), var(--neon2)); }
+:root[data-theme="cyber"] .halftone::before { background: radial-gradient(circle, var(--neon2) 1.3px, transparent 1.7px) 0 0 / 9px 9px; }
+:root[data-theme="cyber"] input, :root[data-theme="cyber"] select, :root[data-theme="cyber"] textarea { background: #0a0820; color: var(--text); border-color: var(--ink); }
+:root[data-theme="cyber"] ::selection { background: var(--neon2); color: #000; }
+:root[data-theme="cyber"] .mg-thumb, :root[data-theme="cyber"] .mg-layouts button { border-color: var(--ink); }
+:root[data-theme="cyber"] .canvas-holder { box-shadow: 0 0 0 2px var(--ink), 8px 8px 0 var(--neon2), 0 0 40px rgba(45, 226, 255, .35); }
+:root[data-theme="cyber"] .help-fab { box-shadow: 4px 4px 0 var(--neon2), 0 0 16px var(--ink); }
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-theme="cyber"] .logo-word { animation: cyber-flicker 6s infinite; }
+}
+@keyframes cyber-flicker { 0%, 92%, 100% { opacity: 1; } 93% { opacity: .55; } 94% { opacity: 1; } 96% { opacity: .7; } }

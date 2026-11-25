@@ -390,6 +390,12 @@
     comic: 'black and white comic book ink drawing, bold ink lines, halftone shading, no color',
     pencil: 'detailed graphite pencil sketch on white paper, clean line weights, soft hatching',
     anime: 'anime illustration, clean cel shading, vibrant colors',
+    cyberpunk: 'cyberpunk art, neon magenta and cyan lights, rainy futuristic city at night, glowing holographic signs, high detail, cinematic',
+    neonink: 'black ink line art with glowing neon magenta and cyan accents on a dark background, cyberpunk, high contrast',
+    watercolor: 'soft watercolor painting, loose brush strokes, paper texture',
+    oil: 'oil painting, thick textured brush strokes, rich colors',
+    toy: 'cute 3D render, soft studio lighting, glossy plastic toy look',
+    sticker: 'die-cut sticker design, bold outline, flat colors, white border',
     none: ''
   };
   let aiBusy = false;

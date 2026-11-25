@@ -589,8 +589,14 @@
     ink: 'black and white manga panel, japanese manga style, clean bold ink line art, high contrast, no color, no text, no speech bubbles',
     tone: 'black and white manga panel, japanese manga style, ink line art with halftone screentone shading, detailed background, no color, no text, no speech bubbles',
     sketch: 'rough pencil manga storyboard sketch on white paper, graphite lines, no text',
-    anime: 'anime key visual, clean cel shading, vibrant colors, no text'
+    anime: 'anime key visual, clean cel shading, vibrant colors, no text',
+    cyber: 'cyberpunk manga panel in color, neon-lit futuristic city, holographic signs, rain, glowing magenta and cyan lights, dramatic lighting, no text, no speech bubbles',
+    cyberink: 'black and white cyberpunk manga panel, futuristic city, cybernetic implants, mechs and cables, bold ink line art, screentone shading, no color, no text, no speech bubbles',
+    shonen: 'shonen battle manga panel, dynamic action pose, speed lines, bold expressive ink, no color, no text, no speech bubbles',
+    horror: 'horror manga panel, unsettling atmosphere, heavy black ink, fine hatching, no color, no text, no speech bubbles',
+    chibi: 'cute chibi manga style, simple clean ink lines, big expressive eyes, no color, no text, no speech bubbles'
   };
+  const AI_COLOR = new Set(['anime', 'cyber']); // these keep their colors; the rest print black & white
   let aiBusy = false;
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   async function aiFetch(prompt, w, h, status) {
@@ -623,7 +629,7 @@
       const tmp = document.createElement('canvas'); tmp.width = Math.round(b.w); tmp.height = Math.round(b.h);
       const tx = tmp.getContext('2d'), s = Math.max(b.w / bmp.width, b.h / bmp.height);
       tx.drawImage(bmp, (b.w - bmp.width * s) / 2, (b.h - bmp.height * s) / 2, bmp.width * s, bmp.height * s);
-      if (style !== 'anime') { // keep it black & white like a printed manga
+      if (!AI_COLOR.has(style)) { // keep it black & white like a printed manga
         const id = tx.getImageData(0, 0, tmp.width, tmp.height), d = id.data;
         for (let i = 0; i < d.length; i += 4) { let g = 0.3 * d[i] + 0.59 * d[i + 1] + 0.11 * d[i + 2]; g = clamp((g - 128) * 1.18 + 128, 0, 255); d[i] = d[i + 1] = d[i + 2] = g; }
         tx.putImageData(id, 0, 0);

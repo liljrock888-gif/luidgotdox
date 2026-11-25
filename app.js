@@ -166,11 +166,19 @@
     else delete document.documentElement.dataset.theme;
   }
   applyTheme(store.get('theme', null));
-  function themeLabel() { $('#themeBtn').textContent = document.documentElement.dataset.theme === 'dark' ? 'Light' : 'Dark'; }
+  const THEMES = ['light', 'dark', 'cyber'];
+  const THEME_NAMES = { light: 'Light', dark: 'Dark', cyber: 'Cyber' };
+  function themeLabel() {
+    const cur = document.documentElement.dataset.theme || 'light';
+    const next = THEMES[(THEMES.indexOf(cur) + 1) % THEMES.length];
+    $('#themeBtn').textContent = THEME_NAMES[next];
+    $('#themeBtn').title = 'Switch to the ' + THEME_NAMES[next] + ' theme';
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', cur === 'cyber' ? '#07051a' : cur === 'dark' ? '#000000' : '#ffffff');
+  }
   themeLabel();
   $('#themeBtn').addEventListener('click', () => {
     const cur = document.documentElement.dataset.theme || 'light';
-    const next = cur === 'dark' ? 'light' : 'dark';
+    const next = THEMES[(THEMES.indexOf(cur) + 1) % THEMES.length];
     applyTheme(next); store.set('theme', next); themeLabel();
   });
 
