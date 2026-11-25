@@ -145,7 +145,7 @@
   }
 
   // ---------- views ----------
-  const views = ['home', 'art', 'essay'];
+  const views = ['home', 'art', 'manga', 'essay'];
   const listeners = {};
   function show(view) {
     if (!views.includes(view)) view = 'home';
@@ -201,7 +201,7 @@
   $('.topbar').insertBefore(bk, $('#themeBtn'));
   $('#backupBtn').addEventListener('click', exportAll);
   $('#restoreBtn').addEventListener('click', async () => {
-    const f = await pickFile('.freestudio,.fsdoc,.fsart,.json,application/json');
+    const f = await pickFile('.freestudio,.fsdoc,.fsart,.fsmanga,.json,application/json');
     if (f) openAnyFile(f);
   });
 
@@ -213,6 +213,7 @@
     if (data.kind === 'backup') return importAll(f);
     if (data.kind === 'essay' && window.FS.essay) { show('essay'); return window.FS.essay.importDoc(data); }
     if (data.kind === 'art' && window.FS.art) { show('art'); return window.FS.art.loadProject(data); }
+    if (data.kind === 'manga' && window.FS.manga) { show('manga'); return window.FS.manga.load(data); }
     toast('Unknown LuidgotDOx file.');
   }
 

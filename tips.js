@@ -13,6 +13,14 @@
       ['#backupBtn', 'Your work saves in this browser. Backup all downloads everything as one file.'],
       ['.help-fab', 'Stuck? Ask the helper anything, any time.']
     ],
+    manga: [
+      ['#mgTools', 'Ink tools! Pen and Ink brush draw, Tone brush paints screentone dots, Bubble adds speech bubbles.'],
+      ['#mgLayouts', 'Pick a page layout here (Panels tab). Click inside a panel to select it.'],
+      ['#mgCanvas', 'Bubble tool: click or drag on the page, then type. Double-click any bubble to change the words.'],
+      ['#mgScript', 'Write your whole dialogue here, in manga reading order (right to left).'],
+      ['#mgPages', 'Your pages. Add, duplicate and reorder them below.'],
+      ['#mgPdf', 'Done? Export the whole manga as a PDF.']
+    ],
     art: [
       ['#tools', 'Pick a tool here. Shortcuts: B brush, E eraser, [ and ] change size.'],
       ['#swatches', 'Click a color, or use the color box above for any color you want.'],
@@ -144,7 +152,7 @@
   btn.onclick = () => start(store.get('view', 'home'));
 
   // first visit to each page: run its tour once
-  ['home', 'art', 'essay'].forEach((v) => window.FS.onShow(v, () => {
+  ['home', 'art', 'manga', 'essay'].forEach((v) => window.FS.onShow(v, () => {
     if (store.get('tour:' + v, false) || navigator.webdriver) return;
     setTimeout(() => { if (store.get('view') === v && !bubble && $('#modal').hidden) start(v); }, 700);
   }));

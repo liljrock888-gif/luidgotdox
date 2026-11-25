@@ -384,6 +384,68 @@
     render();
   }
 
+  // ---------- AI image (free Pollinations, no key) ----------
+  const AI_STYLES = {
+    pixel: 'pixel art, 16-bit game sprite style, crisp pixels, limited palette, clean dark outline',
+    comic: 'black and white comic book ink drawing, bold ink lines, halftone shading, no color',
+    pencil: 'detailed graphite pencil sketch on white paper, clean line weights, soft hatching',
+    anime: 'anime illustration, clean cel shading, vibrant colors',
+    none: ''
+  };
+  let aiBusy = false;
+  const aiSleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  function aiSize() {
+    // the free API draws up to about 1024px; keep the canvas shape
+    const r = S.W / S.H;
+    let w = 1024, h = Math.round(1024 / r);
+    if (h > 1024) { h = 1024; w = Math.round(1024 * r); }
+    return { w: Math.max(256, w - (w % 16)), h: Math.max(256, h - (h % 16)) };
+  }
+  async function aiFetch(prompt, status) {
+    const { w, h } = aiSize();
+    const seed = Math.floor(Math.random() * 1e9);
+    const url = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt) +
+      `?width=${w}&height=${h}&model=flux&nologo=true&seed=${seed}&referrer=luidgotdox`;
+    for (let t = 0; t < 4; t++) {
+      status('Drawing… free AI can take up to a minute.');
+      const res = await fetch(url);
+      if (res.ok && (res.headers.get('content-type') || '').startsWith('image/')) return createImageBitmap(await res.blob());
+      let wait = 45;
+      if (res.status === 402 || res.status === 429) {
+        try { const j = await res.json(); const m = /after (\d+)s/i.exec((j.error && j.error.message) || ''); if (m) wait = +m[1] + 2; } catch (_) {}
+      } else if (res.status >= 500) wait = 8;
+      else throw new Error('The AI said no (' + res.status + '). Try different words.');
+      for (let s = wait; s > 0; s--) { status(`Free AI limit: 1 picture every 45 seconds. Trying again in ${s}s…`); await aiSleep(1000); }
+    }
+    throw new Error('The free AI is busy. Try again in a minute.');
+  }
+  $('#genAI').onclick = async () => {
+    if (aiBusy) return;
+    const text = $('#aiPrompt').value.trim();
+    if (!text) { toast('Describe a picture first'); $('#aiPrompt').focus(); return; }
+    if (!navigator.onLine) return toast('AI needs the internet');
+    const st = $('#aiStatus'), btn = $('#genAI');
+    const status = (m) => { st.textContent = m; };
+    const style = AI_STYLES[$('#aiStyle').value] || '';
+    aiBusy = true; btn.disabled = true; btn.textContent = 'Drawing…';
+    try {
+      const bmp = await aiFetch(style ? text + ', ' + style : text, status);
+      const L = addLayer('AI: ' + text.slice(0, 24));
+      const s = Math.min(S.W / bmp.width, S.H / bmp.height);
+      const dw = bmp.width * s, dh = bmp.height * s;
+      L.ctx.imageSmoothingEnabled = !pixelMode() || s < 1;
+      L.ctx.imageSmoothingQuality = 'high';
+      L.ctx.drawImage(bmp, (S.W - dw) / 2, (S.H - dh) / 2, dw, dh);
+      render(); changed();
+      status('Done! It is on its own layer. Undo removes it.');
+      toast('AI picture added');
+    } catch (e) {
+      status(e.message || 'Something went wrong. Try again.');
+    } finally {
+      aiBusy = false; btn.disabled = false; btn.textContent = 'Generate';
+    }
+  };
+
   // ---------- generators ----------
   const rand = (a, b) => a + Math.random() * (b - a);
   const ri = (a, b) => Math.floor(rand(a, b + 1));

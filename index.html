@@ -29,6 +29,7 @@
   <nav class="tabs" role="tablist">
     <button class="tab" data-view="home" role="tab">Home</button>
     <button class="tab" data-view="art" role="tab">Art Studio</button>
+    <button class="tab" data-view="manga" role="tab">Manga</button>
     <button class="tab" data-view="essay" role="tab">Essay Writer</button>
   </nav>
   <button id="themeBtn" class="icon-btn" title="Toggle dark mode">Dark</button>
@@ -48,6 +49,11 @@
                 <h2>Art Studio</h2>
         <p>Brushes, layers, shapes, generators (palettes, patterns, gradients, prompts) and templates for thumbnails, posters, PFPs, wallpapers, memes and Roblox shirts.</p>
         <span class="btn primary">Open the studio</span>
+      </button>
+      <button class="card" data-go="manga">
+        <h2>Manga Maker</h2>
+        <p>Panel layouts, ink pens, screentones, speed lines, speech bubbles you can type in, free AI panel art, and PDF export.</p>
+        <span class="btn primary">Make a manga</span>
       </button>
       <button class="card" data-go="essay">
                 <h2>Essay Writer</h2>
@@ -173,6 +179,22 @@
           </div>
         </div>
 
+        <div class="gen" id="aiGen">
+          <h4>AI image</h4>
+          <textarea id="aiPrompt" rows="3" maxlength="600" placeholder="Describe a picture, e.g. a robot knight with a shield"></textarea>
+          <div class="row">
+            <select id="aiStyle" title="Style">
+              <option value="pixel">Pixel art</option>
+              <option value="comic">Comic ink (B&amp;W)</option>
+              <option value="pencil">Pencil sketch</option>
+              <option value="anime">Anime</option>
+              <option value="none">No style</option>
+            </select>
+            <button id="genAI" class="btn sm">Generate</button>
+          </div>
+          <p class="hint" id="aiStatus">Free AI (Pollinations). Adds a new layer. One picture every 45 seconds, with a small logo in the corner. Don't type personal info.</p>
+        </div>
+
         <div class="gen">
           <h4>Random art</h4>
           <div class="row">
@@ -198,6 +220,131 @@
       <div class="sub" id="sub-tpl" hidden>
         <div class="tpl-list" id="tplList"></div>
         <p class="hint">Templates make a new canvas. Your current art is replaced (export it first!).</p>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<!-- MANGA MAKER -->
+<main id="view-manga" class="view" hidden>
+  <div class="art-layout manga-layout">
+    <aside class="panel left">
+      <h3>Tools</h3>
+      <div class="tool-grid" id="mgTools">
+        <button data-tool="select" class="tool active" title="Move / edit bubbles and text (V)">Select</button>
+        <button data-tool="pen" class="tool" title="Fine ink pen (P)">Pen</button>
+        <button data-tool="brush" class="tool" title="Thick ink brush (B)">Ink brush</button>
+        <button data-tool="eraser" class="tool" title="Eraser (E)">Eraser</button>
+        <button data-tool="tone" class="tool" title="Screentone brush (N)">Tone brush</button>
+        <button data-tool="white" class="tool" title="White-out brush (W)">White-out</button>
+        <button data-tool="bubble" class="tool" title="Speech bubble: click or drag (S)">Bubble</button>
+        <button data-tool="sfx" class="tool" title="Sound effect text (X)">SFX text</button>
+      </div>
+      <label class="field">Size <input type="range" id="mgSize" min="1" max="60" value="4"><output id="mgSizeOut">4</output></label>
+
+      <div class="field col">
+        <span>Bubble type</span>
+        <select id="mgBubbleType">
+          <option value="speech">Speech</option>
+          <option value="thought">Thought (cloud)</option>
+          <option value="shout">Shout (spiky)</option>
+          <option value="whisper">Whisper (dashed)</option>
+          <option value="narration">Narration box</option>
+        </select>
+      </div>
+      <div class="field col">
+        <span>Screentone</span>
+        <select id="mgTone">
+          <option value="dots-light">Light dots</option>
+          <option value="dots">Medium dots</option>
+          <option value="dots-dark">Dark dots</option>
+          <option value="lines">Hatch lines</option>
+          <option value="cross">Cross-hatch</option>
+          <option value="gray">Flat gray</option>
+        </select>
+      </div>
+
+      <h3>Selected</h3>
+      <div id="mgSel" class="mg-sel">
+        <p class="hint">Pick the Select tool and click a bubble or SFX. Double-click a bubble to write in it.</p>
+      </div>
+    </aside>
+
+    <section class="stage-wrap">
+      <div class="stage-bar">
+        <button id="mgUndo" class="btn sm" title="Undo (Ctrl+Z)">Undo</button>
+        <button id="mgRedo" class="btn sm" title="Redo (Ctrl+Y)">Redo</button>
+        <span class="dim" id="mgInfo"></span>
+        <span class="spacer"></span>
+        <button id="mgNew" class="btn sm">New manga</button>
+        <button id="mgOpen" class="btn sm">Open</button>
+        <button id="mgSave" class="btn sm" title="Save an editable copy (.fsmanga)">Save</button>
+        <button id="mgPng" class="btn sm">Page PNG</button>
+        <button id="mgPdf" class="btn sm primary">Export PDF</button>
+      </div>
+      <div class="stage" id="mgStage">
+        <div class="canvas-holder mg-holder" id="mgHolder">
+          <canvas id="mgCanvas"></canvas>
+          <textarea id="mgEdit" class="mg-edit" hidden spellcheck="true" placeholder="Type dialogue…"></textarea>
+        </div>
+      </div>
+      <div class="mg-pages">
+        <div id="mgPages" class="mg-strip"></div>
+        <div class="row">
+          <button id="mgAddPage" class="btn sm">+ Page</button>
+          <button id="mgDupPage" class="btn sm">Duplicate</button>
+          <button id="mgLeft" class="btn sm" title="Move page earlier">Move ←</button>
+          <button id="mgRight" class="btn sm" title="Move page later">Move →</button>
+          <button id="mgDelPage" class="btn sm">Delete page</button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel right">
+      <div class="subtabs">
+        <button class="subtab active" data-mgsub="script">Script</button>
+        <button class="subtab" data-mgsub="panels">Panels</button>
+        <button class="subtab" data-mgsub="ai">AI art</button>
+      </div>
+
+      <div class="mg-sub" id="mgsub-script">
+        <label class="field">Title <input id="mgTitle" maxlength="80" placeholder="My manga"></label>
+        <label class="check"><input type="checkbox" id="mgRtl" checked> Read right-to-left (manga style)</label>
+        <h4>Dialogue on this page</h4>
+        <ol id="mgScript" class="mg-script"></ol>
+        <button id="mgAddLine" class="btn sm block">+ Add a line</button>
+        <p class="hint">Type here or double-click a bubble on the page. New lines go in the selected panel.</p>
+      </div>
+
+      <div class="mg-sub" id="mgsub-panels" hidden>
+        <h4>Page layout</h4>
+        <div id="mgLayouts" class="mg-layouts"></div>
+        <label class="field">Border <input type="range" id="mgBorder" min="0" max="10" value="4"><output id="mgBorderOut">4</output></label>
+        <h4>Effects for the selected panel</h4>
+        <p class="hint" id="mgPanelInfo">Click inside a panel to select it.</p>
+        <div class="mg-fx">
+          <button id="mgFxSpeed" class="btn sm">Speed lines</button>
+          <button id="mgFxFocus" class="btn sm">Focus lines</button>
+          <button id="mgFxTone" class="btn sm">Tone fill</button>
+          <button id="mgFxBlack" class="btn sm">Black panel</button>
+          <button id="mgFxClear" class="btn sm">Clear panel</button>
+        </div>
+        <label class="field">Speed line angle <input type="range" id="mgAngle" min="0" max="180" value="0"><output id="mgAngleOut">0°</output></label>
+      </div>
+
+      <div class="mg-sub" id="mgsub-ai" hidden>
+        <h4>AI art for the selected panel</h4>
+        <textarea id="mgAiPrompt" rows="3" maxlength="600" placeholder="e.g. girl with a katana on a rooftop at night, rain, dramatic angle"></textarea>
+        <div class="row">
+          <select id="mgAiStyle">
+            <option value="ink">Manga ink (B&amp;W)</option>
+            <option value="tone">Manga with screentones</option>
+            <option value="sketch">Rough pencil sketch</option>
+            <option value="anime">Anime color</option>
+          </select>
+          <button id="mgAiGo" class="btn sm">Generate</button>
+        </div>
+        <p class="hint" id="mgAiStatus">Free AI (Pollinations). Fills the selected panel; Undo removes it. One picture every 45 seconds. Don't type personal info.</p>
       </div>
     </aside>
   </div>
@@ -301,6 +448,7 @@
 
 <script src="app.js"></script>
 <script src="art.js"></script>
+<script src="manga.js"></script>
 <script src="essay.js"></script>
 <script src="help.js"></script>
 <script src="pwa.js"></script>

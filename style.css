@@ -169,6 +169,7 @@ input[type="color"] { width: 40px; height: 30px; border: 1px solid var(--line); 
 .subtab.active { color: var(--text); border-bottom-color: var(--text); }
 .gen { padding: 0 0 16px; margin-bottom: 16px; border-bottom: 1px solid var(--line); }
 .gen select { flex: 1; }
+.gen textarea { width: 100%; resize: vertical; margin: 0 0 8px; min-height: 64px; }
 .palette { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; margin-top: 10px; border-radius: 6px; overflow: hidden; }
 .palette button { aspect-ratio: auto; height: 40px; border-radius: 0; border: 0; }
 .prompt { margin: 0 0 10px; font: italic 18px/1.35 var(--serif); }
@@ -595,3 +596,35 @@ h4 { font: 400 18px/1 var(--serif); letter-spacing: .05em; }
   .tip-ring { transition: none; }
 }
 @media print { .tip-bubble, .tip-ring { display: none !important; } }
+
+/* ---------- MANGA MAKER ---------- */
+.manga-layout .stage { padding: 18px; }
+.mg-holder { background: #fff; touch-action: none; }
+#mgCanvas { display: block; cursor: crosshair; touch-action: none; }
+#mgCanvas.sel { cursor: default; }
+.mg-edit {
+  position: absolute; z-index: 5; resize: none; border: 2px dashed #000; background: rgba(255,255,255,.96); color: #000;
+  font: 700 16px/1.2 var(--comic); text-align: center; padding: 6px; outline: none; line-height: 1.2;
+}
+.mg-pages { background: var(--panel); border-top: 3px solid var(--ink); padding: 10px 12px; display: grid; gap: 8px; }
+.mg-strip { display: flex; gap: 10px; overflow-x: auto; padding: 4px 2px 6px; }
+.mg-thumb { flex: none; border: 2px solid var(--ink); background: #fff; padding: 0; cursor: pointer; position: relative; line-height: 0; }
+.mg-thumb canvas { width: 54px; height: 76px; display: block; }
+.mg-thumb span { position: absolute; left: 2px; bottom: 2px; font: 700 11px/1 var(--comic); background: #000; color: #fff; padding: 2px 4px; }
+.mg-thumb.active { box-shadow: 4px 4px 0 var(--ink); transform: translate(-2px, -2px); }
+.mg-layouts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
+.mg-layouts button { border: 2px solid var(--ink); background: #fff; padding: 3px; cursor: pointer; line-height: 0; }
+.mg-layouts button.active { box-shadow: 3px 3px 0 var(--ink); }
+.mg-layouts canvas { width: 100%; height: auto; display: block; }
+.mg-fx { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0 12px; }
+.mg-script { list-style: none; padding: 0; margin: 0 0 10px; display: grid; gap: 8px; counter-reset: line; }
+.mg-script li { display: grid; grid-template-columns: 22px 1fr; gap: 6px; align-items: start; }
+.mg-script li::before { counter-increment: line; content: counter(line); font: 400 18px/1.4 var(--serif); }
+.mg-script li.active textarea { box-shadow: 3px 3px 0 var(--ink); }
+.mg-script textarea { width: 100%; resize: vertical; min-height: 44px; font: 700 14px/1.35 var(--comic); }
+.mg-script .meta { grid-column: 2; display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--dim); margin-top: -4px; }
+.mg-script .meta select { font-size: 12px; padding: 1px 4px; }
+.mg-script .meta button { border: 0; background: none; cursor: pointer; font-size: 12px; text-decoration: underline; color: var(--dim); padding: 0; }
+.mg-sel .row { margin-top: 6px; }
+.mg-sub textarea#mgAiPrompt { width: 100%; resize: vertical; min-height: 64px; margin-bottom: 8px; }
+@media (max-width: 1000px) { .manga-layout > .stage-wrap { order: 1; } .mg-layouts { grid-template-columns: repeat(6, 1fr); } }
